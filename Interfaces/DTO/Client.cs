@@ -1,10 +1,4 @@
 ﻿using DomainModel;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Interfaces.DTO
 {
@@ -24,7 +18,7 @@ namespace Interfaces.DTO
         public string surname { get; set; }
 
         public string midname { get; set; }
-        public string tel_number { get; set; }
+        public string phome_number { get; set; }
         public DateTime birth_date { get; set; }
         public string birth_short { get; set; }
 
@@ -36,7 +30,7 @@ namespace Interfaces.DTO
             discount_points = client.DiscountPoints;
             surname = client.Surname;
             midname = client.Midname;
-            tel_number = client.TelNumber;
+            phome_number = client.PhoneNumber;
             birth_date = client.BirthDate;
             birth_short = birth_date.ToShortDateString();
             full_name = name + " " + midname + " " + surname;

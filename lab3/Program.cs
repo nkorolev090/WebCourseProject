@@ -1,9 +1,10 @@
 using DAL;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 using BLL.Services;
 using Interfaces.Services;
 using Interfaces.Repository;
 using DAL.Repository;
+using DomainModel;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +24,7 @@ options.AddDefaultPolicy(
 
 //NinjectKernel.Kernel = new StandardKernel(new NinjectRegistration(), new ReposModule());
 // Add services to the container.
-
+builder.Services.AddIdentity<User, IdentityRole<int>>().AddEntityFrameworkStores<ModelAutoService>();
 builder.Services.AddDbContext<ModelAutoService>();
 builder.Services.AddScoped<IDbRepository, DbRepositorySQL>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
@@ -53,6 +54,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

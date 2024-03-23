@@ -4,12 +4,13 @@ using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using DomainModel;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
 
 namespace DAL
 {
-    public partial class ModelAutoService : DbContext
+    public partial class ModelAutoService : IdentityDbContext<User, IdentityRole<int>, int>
     {
         //protected readonly IConfiguration configuration;
 
@@ -44,11 +45,18 @@ namespace DAL
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder
             .UseLazyLoadingProxies()
-            .UseSqlServer("Server=ThinkPad_Nikita\\SQLEXPRESS;Database=AutoServiceDb;Trusted_Connection=True;Encrypt=False;", b => b.MigrationsAssembly("lab"));
+            .UseSqlServer("Server=ThinkPad_Nikita\\SQLEXPRESS;Database=AutoServiceDb;Trusted_Connection=True;Encrypt=False;", b => b.MigrationsAssembly("DAL"));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.UseTpcMappingStrategy();
+                //entity.HasOne(e => e.Mechanic).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //entity.HasOne(e => e.Client).WithMany().OnDelete(DeleteBehavior.NoAction);
+            });
             modelBuilder.Entity<Breakdown>(entity =>
             {
                 entity.ToTable("Breakdown");
@@ -96,8 +104,8 @@ namespace DAL
 
             modelBuilder.Entity<Client>(entity =>
             {
-                entity.ToTable("Client");
-
+                entity.ToTable("Client"/*, e => e.Property(e=>e.Id).UseIdentityColumn(1, 2)*/);
+                //entity.UseTptMappingStrategy();
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.BirthDate)
                     .HasColumnType("date")
@@ -116,10 +124,6 @@ namespace DAL
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("surname");
-                entity.Property(e => e.TelNumber)
-                    .HasMaxLength(12)
-                    .IsUnicode(false)
-                    .HasColumnName("tel_number");
 
                 entity.HasOne(d => d.Discount).WithMany(p => p.Clients)
                     .HasForeignKey(d => d.DiscountId)
@@ -141,8 +145,8 @@ namespace DAL
 
             modelBuilder.Entity<Mechanic>(entity =>
             {
-                entity.ToTable("Mechanic");
-
+                entity.ToTable("Mechanic"/*, e => e.Property(e => e.Id).UseIdentityColumn(2, 2)*/);
+                //entity.UseTptMappingStrategy();
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.Midname)
                     .HasMaxLength(50)
@@ -156,10 +160,6 @@ namespace DAL
                     .HasMaxLength(50)
                     .IsUnicode(false)
                     .HasColumnName("surname");
-                entity.Property(e => e.TelNumber)
-                    .HasMaxLength(12)
-                    .IsUnicode(false)
-                    .HasColumnName("tel_number");
             });
 
             modelBuilder.Entity<MechanicBreakdown>(entity =>
