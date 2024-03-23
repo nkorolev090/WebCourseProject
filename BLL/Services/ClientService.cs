@@ -14,9 +14,15 @@ namespace BLL.Services
     {
         IDbRepository db;
         public ClientService(IDbRepository db) { this.db = db; }
-        public Task<bool> CreateClientDTOAsync(ClientDTO p)
+        public async Task<ClientDTO> CreateClientDTOAsync(ClientDTO p)
         {
-            throw new NotImplementedException();
+            Client client = new Client();
+            client.Name = p.name;
+            client.DiscountId = 1;
+            client.Discount = await db.Discouts.GetItemAsync(1);
+            client.DiscountPoints = 0;
+            
+            return new ClientDTO(await db.Clients.CreateAsync(client));
         }
 
         public void DeleteClientDTOAsync(int id)

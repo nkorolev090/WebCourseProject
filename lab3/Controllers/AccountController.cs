@@ -1,8 +1,10 @@
 ﻿using DomainModel;
+using Interfaces.Services;
 using lab.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Interfaces.DTO;
 
 namespace lab.Controllers
 {
@@ -11,11 +13,12 @@ namespace lab.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly IClientService _clientService;
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IClientService clientService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _clientService = clientService;
         }
 
         [HttpPost]
@@ -25,13 +28,17 @@ namespace lab.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new() { Email = model.Email, UserName = model.Email };
+               ClientDTO cl =  await _clientService.CreateClientDTOAsync(new ClientDTO(new Client { Name = model.Email}));
+
+                User user = new() { Email = model.Email, UserName = model.Email, ClientId = cl.id };
+                
                 // Добавление нового пользователя
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
                     // Установка куки
                     await _signInManager.SignInAsync(user, false);
+                    
                     return Ok(new { message = "Добавлен новый пользователь: " + user.UserName });
                 }
                 else

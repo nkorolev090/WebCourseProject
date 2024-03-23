@@ -24,10 +24,11 @@ options.AddDefaultPolicy(
 
 //NinjectKernel.Kernel = new StandardKernel(new NinjectRegistration(), new ReposModule());
 // Add services to the container.
-builder.Services.AddIdentity<User, IdentityRole<int>>().AddEntityFrameworkStores<ModelAutoService>();
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ModelAutoService>();
 builder.Services.AddDbContext<ModelAutoService>();
 builder.Services.AddScoped<IDbRepository, DbRepositorySQL>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+builder.Services.AddScoped<IClientService, ClientService>();
 //builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 builder.Services.AddControllers();

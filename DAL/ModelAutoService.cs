@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DAL
 {
-    public partial class ModelAutoService : IdentityDbContext<User, IdentityRole<int>, int>
+    public partial class ModelAutoService : IdentityDbContext<User>
     {
         //protected readonly IConfiguration configuration;
 
@@ -53,9 +53,9 @@ namespace DAL
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.UseTpcMappingStrategy();
-                //entity.HasOne(e => e.Mechanic).WithMany().OnDelete(DeleteBehavior.NoAction);
-                //entity.HasOne(e => e.Client).WithMany().OnDelete(DeleteBehavior.NoAction);
+                //entity.UseTpcMappingStrategy();
+                entity.HasOne(e => e.Mechanic).WithMany().HasForeignKey(e => e.MechanicId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Client).WithMany().HasForeignKey(e => e.ClientId).OnDelete(DeleteBehavior.Cascade);
             });
             modelBuilder.Entity<Breakdown>(entity =>
             {

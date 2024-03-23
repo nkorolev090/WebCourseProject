@@ -20,7 +20,7 @@ namespace DAL.Repository
         {
             db.Clients.Add(item);
             await db.SaveChangesAsync();
-            return await db.Clients.LastAsync();
+            return await db.Clients.OrderBy(c=>c.Id).LastOrDefaultAsync();
         }
 
         public async void DeleteAsync(int id)

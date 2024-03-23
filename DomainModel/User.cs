@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 
 namespace DomainModel
 {
-    public class User : IdentityUser<int>
+    public class User : IdentityUser
     {
-        public string Name { get; set; } = null!;
+        public int? ClientId { get; set; }
 
-        public string Surname { get; set; } = null!;
+        public int? MechanicId { get; set; }
 
-        public string Midname { get; set; } = null!;
+        public virtual Client? Client { get; set; }
 
-        private Client? Client { get; set; }
-
-        private Mechanic? Mechanic { get; set; }
+        public virtual Mechanic? Mechanic { get; set; }
     }
 }

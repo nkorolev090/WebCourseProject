@@ -4,14 +4,21 @@ using System.Collections.Generic;
 
 namespace DomainModel;
 
-public partial class Client : User
+public partial class Client
 {
+    public int Id { get; set; }
+    public string Name { get; set; } = null!;
+
+    public string? Surname { get; set; } = null!;
+
+    public string? Midname { get; set; } = null!;
+    public string? PhoneNumber { get; set; } = null!;
 
     public int DiscountId { get; set; }
 
     public int DiscountPoints { get; set; }
 
-    public DateTime BirthDate { get; set; }
+    public DateTime? BirthDate { get; set; } = null!;
 
     public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
 

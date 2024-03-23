@@ -25,8 +25,6 @@ namespace DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.HasSequence("UserSequence");
-
             modelBuilder.Entity("DomainModel.Breakdown", b =>
                 {
                     b.Property<int>("Id")
@@ -108,6 +106,56 @@ namespace DAL.Migrations
                     b.ToTable("Car", (string)null);
                 });
 
+            modelBuilder.Entity("DomainModel.Client", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("BirthDate")
+                        .HasColumnType("date")
+                        .HasColumnName("birth_date");
+
+                    b.Property<int>("DiscountId")
+                        .HasColumnType("int")
+                        .HasColumnName("discount_id");
+
+                    b.Property<int>("DiscountPoints")
+                        .HasColumnType("int")
+                        .HasColumnName("discount_points");
+
+                    b.Property<string>("Midname")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("midname");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("surname");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DiscountId");
+
+                    b.ToTable("Client", (string)null);
+                });
+
             modelBuilder.Entity("DomainModel.Discount", b =>
                 {
                     b.Property<int>("Id")
@@ -131,6 +179,44 @@ namespace DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Discount", (string)null);
+                });
+
+            modelBuilder.Entity("DomainModel.Mechanic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Midname")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("midname");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)")
+                        .HasColumnName("surname");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Mechanic", (string)null);
                 });
 
             modelBuilder.Entity("DomainModel.MechanicBreakdown", b =>
@@ -272,15 +358,13 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DomainModel.User", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id")
-                        .HasDefaultValueSql("NEXT VALUE FOR [UserSequence]");
-
-                    SqlServerPropertyBuilderExtensions.UseSequence(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -300,19 +384,8 @@ namespace DAL.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Midname")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("midname");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("name");
+                    b.Property<int?>("MechanicId")
+                        .HasColumnType("int");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -334,13 +407,6 @@ namespace DAL.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)")
-                        .HasColumnName("surname");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -349,6 +415,10 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("MechanicId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -359,17 +429,12 @@ namespace DAL.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.UseTpcMappingStrategy();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -393,7 +458,7 @@ namespace DAL.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -407,8 +472,9 @@ namespace DAL.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -417,7 +483,7 @@ namespace DAL.Migrations
                     b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -431,8 +497,9 @@ namespace DAL.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -441,7 +508,7 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -452,8 +519,9 @@ namespace DAL.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -462,13 +530,13 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -477,10 +545,10 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -496,34 +564,6 @@ namespace DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DomainModel.Client", b =>
-                {
-                    b.HasBaseType("DomainModel.User");
-
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("date")
-                        .HasColumnName("birth_date");
-
-                    b.Property<int>("DiscountId")
-                        .HasColumnType("int")
-                        .HasColumnName("discount_id");
-
-                    b.Property<int>("DiscountPoints")
-                        .HasColumnType("int")
-                        .HasColumnName("discount_points");
-
-                    b.HasIndex("DiscountId");
-
-                    b.ToTable("Client", (string)null);
-                });
-
-            modelBuilder.Entity("DomainModel.Mechanic", b =>
-                {
-                    b.HasBaseType("DomainModel.User");
-
-                    b.ToTable("Mechanic", (string)null);
-                });
-
             modelBuilder.Entity("DomainModel.Car", b =>
                 {
                     b.HasOne("DomainModel.Client", "Owner")
@@ -533,6 +573,17 @@ namespace DAL.Migrations
                         .HasConstraintName("FK_CAR_Client");
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("DomainModel.Client", b =>
+                {
+                    b.HasOne("DomainModel.Discount", "Discount")
+                        .WithMany("Clients")
+                        .HasForeignKey("DiscountId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Client_Discount");
+
+                    b.Navigation("Discount");
                 });
 
             modelBuilder.Entity("DomainModel.MechanicBreakdown", b =>
@@ -598,16 +649,33 @@ namespace DAL.Migrations
                     b.Navigation("Registration");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("DomainModel.User", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                    b.HasOne("DomainModel.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("DomainModel.Mechanic", "Mechanic")
+                        .WithMany()
+                        .HasForeignKey("MechanicId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Mechanic");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.HasOne("DomainModel.User", null)
                         .WithMany()
@@ -616,7 +684,7 @@ namespace DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("DomainModel.User", null)
                         .WithMany()
@@ -625,9 +693,9 @@ namespace DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -640,24 +708,13 @@ namespace DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("DomainModel.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DomainModel.Client", b =>
-                {
-                    b.HasOne("DomainModel.Discount", "Discount")
-                        .WithMany("Clients")
-                        .HasForeignKey("DiscountId")
-                        .IsRequired()
-                        .HasConstraintName("FK_Client_Discount");
-
-                    b.Navigation("Discount");
                 });
 
             modelBuilder.Entity("DomainModel.Breakdown", b =>
@@ -672,9 +729,21 @@ namespace DAL.Migrations
                     b.Navigation("Registrations");
                 });
 
+            modelBuilder.Entity("DomainModel.Client", b =>
+                {
+                    b.Navigation("Cars");
+                });
+
             modelBuilder.Entity("DomainModel.Discount", b =>
                 {
                     b.Navigation("Clients");
+                });
+
+            modelBuilder.Entity("DomainModel.Mechanic", b =>
+                {
+                    b.Navigation("MechanicBreakdowns");
+
+                    b.Navigation("Slots");
                 });
 
             modelBuilder.Entity("DomainModel.Registration", b =>
@@ -685,18 +754,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("DomainModel.Status", b =>
                 {
                     b.Navigation("Registrations");
-                });
-
-            modelBuilder.Entity("DomainModel.Client", b =>
-                {
-                    b.Navigation("Cars");
-                });
-
-            modelBuilder.Entity("DomainModel.Mechanic", b =>
-                {
-                    b.Navigation("MechanicBreakdowns");
-
-                    b.Navigation("Slots");
                 });
 #pragma warning restore 612, 618
         }

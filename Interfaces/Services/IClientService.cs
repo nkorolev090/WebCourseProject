@@ -10,7 +10,7 @@ namespace Interfaces.Services
     public interface IClientService
     {
        Task<List<ClientDTO>> GetAllClientDTOAsync();
-        Task<bool> CreateClientDTOAsync(ClientDTO p);
+        Task<ClientDTO> CreateClientDTOAsync(ClientDTO p);
         void UpdateClientDTOAsync(ClientDTO p);
         void UpdateClientDiscountAsync(int id, int count);
         Task<ClientDTO> GetClientDTOAsync(int id);
