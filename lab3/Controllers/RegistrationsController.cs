@@ -81,15 +81,16 @@ namespace lab2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                List<RegistrationDTO> _regs = await registrationService.GetClientRegistrationsAsync(registration.client_id);
-                if (!_regs.Any(r => r.id == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                //List<RegistrationDTO> _regs = await registrationService.GetClientRegistrationsAsync(registration.client_id);
+                //if (!_regs.Any(r => r.id == id))
+                //{
+                //    return NotFound();
+                //}
+                //else
+                //{
+                //    throw;
+                //}
+                return NotFound();
             }
 
             return NoContent();

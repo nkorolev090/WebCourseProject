@@ -44,7 +44,7 @@ namespace DAL
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder
             .UseLazyLoadingProxies()
-            .UseSqlServer("Server=ThinkPad_Nikita\\SQLEXPRESS;Database=AutoService;Trusted_Connection=True;Encrypt=False;");
+            .UseSqlServer("Server=ThinkPad_Nikita\\SQLEXPRESS;Database=AutoServiceDb;Trusted_Connection=True;Encrypt=False;", b => b.MigrationsAssembly("lab"));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

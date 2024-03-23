@@ -13,9 +13,11 @@ namespace DAL
         {
             try
             {
-                modelAutoService.Database.EnsureDeleted();
-                if (!modelAutoService.Discounts.Any())
+                modelAutoService.Database.EnsureCreated();
+                if (modelAutoService.Discounts.Any())
                 {
+                    return;
+                }
                     var discounts = new Discount[]
                     {
                         new Discount{Name = "Бронзовый", Sale = 5},
@@ -27,10 +29,12 @@ namespace DAL
 
                     await modelAutoService.SaveChangesAsync();
 
-                }
 
-                if (!modelAutoService.Statuses.Any())
+
+                if (modelAutoService.Statuses.Any())
                 {
+                    return;
+                }
                     var statuses = new Status[]
                     {
                         new Status{Name = "На обработке"},
@@ -43,10 +47,12 @@ namespace DAL
                     await modelAutoService.Statuses.AddRangeAsync(statuses);
 
                     await modelAutoService.SaveChangesAsync();
-                }
 
-                if (!modelAutoService.Breakdowns.Any())
+
+                if (modelAutoService.Breakdowns.Any())
                 {
+                    return;
+                }
                     var breakdowns = new Breakdown[]
                     {
                         new Breakdown{Title = "Тех. осмотр",
@@ -69,7 +75,7 @@ namespace DAL
                     await modelAutoService.Breakdowns.AddRangeAsync(breakdowns);
 
                     await modelAutoService.SaveChangesAsync();
-                }
+                
             }
             catch (Exception ex)
             {

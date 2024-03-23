@@ -16,7 +16,7 @@ namespace Interfaces.DTO
 
         public int car_id { get; set; }
 
-        public string car_name {  get; set; }
+        public string? car_name {  get; set; }
 
         public DateTime? reg_date {  get; set; }
 
@@ -24,9 +24,9 @@ namespace Interfaces.DTO
 
         public int status { get; set; }
 
-        public string status_name { get; set; }
+        public string? status_name { get; set; }
 
-        public int client_id {  get; set; }
+        public int? client_id {  get; set; }
         public int? reg_price { get; set; }
 
         public RegistrationDTO(Registration registration) {
