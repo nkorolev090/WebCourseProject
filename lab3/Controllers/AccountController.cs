@@ -24,11 +24,11 @@ namespace lab.Controllers
             if (ModelState.IsValid)
             {
                 // Добавление нового пользователя
-                var result = await _userService.RegisterUserAsync(model.Email, model.Password, true); // third param?
+                var result = await _userService.RegisterUserAsync(model.Email, model.Password, model.IsClient);
 
                 if (result.Succeeded)
                 {
-                    return Ok(new { message = "Добавлен новый пользователь: " + model.Email });
+                    return Ok(new { message = "Добавлен новый пользователь: ", email = model.Email });
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace lab.Controllers
                 var result = await _userService.SignInUserAsync(model.Email, model.Password, model.RememberMe);
                 if (result.Succeeded)
                 {
-                    return Ok(new { message = "Выполнен вход", userName = model.Email });
+                    return Ok(new { message = "Выполнен вход", email = model.Email });
                 }
                 else
                 {
@@ -109,11 +109,11 @@ namespace lab.Controllers
         public async Task<IActionResult> IsAuthenticated()
         {
             var result =  await _userService.IsAuthenticatedAsync(HttpContext.User);
-            if (!result)
+            if (result == null)
             {
                 return Unauthorized(new { message = "Вы Гость. Пожалуйста, выполните вход" });
             }
-            return Ok(new { message = "Сессия активна"});
+            return Ok(new { message = "Сессия активна", userDTO = result});
         
         }
     }

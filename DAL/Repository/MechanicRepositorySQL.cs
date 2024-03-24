@@ -14,9 +14,11 @@ namespace DAL.Repository
         ModelAutoService db;
         public MechanicRepositorySQL(ModelAutoService db) { this.db = db; }
 
-        public Task<Mechanic> CreateAsync(Mechanic item)
+        public async Task<Mechanic> CreateAsync(Mechanic item)
         {
-            throw new NotImplementedException();
+            db.Mechanics.Add(item);
+            await db.SaveChangesAsync();
+            return await db.Mechanics.OrderBy(c => c.Id).LastOrDefaultAsync();
         }
 
         public void DeleteAsync(int id)
