@@ -24,7 +24,7 @@ namespace lab.Controllers
             if (ModelState.IsValid)
             {
                 // Добавление нового пользователя
-                var result = await _userService.RegisterUserAsync(model.Email, model.Password, model.IsClient);
+                var result = await _userService.RegisterUserAsync(model.Email, model.Password/*, model.IsClient*/);
 
                 if (result.Succeeded)
                 {
@@ -113,7 +113,7 @@ namespace lab.Controllers
             {
                 return Unauthorized(new { message = "Вы Гость. Пожалуйста, выполните вход" });
             }
-            return Ok(new { message = "Сессия активна", userDTO = result});
+            return Ok(new { message = "Сессия активна", userDTO = result, email = result.userName});
         
         }
     }

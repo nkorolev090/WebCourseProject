@@ -35,6 +35,13 @@ namespace lab2.Controllers
             return await registrationService.GetClientRegistrationsAsync(client_id);
         }
 
+        // GET: api/<RegistrationsController>byMechanicId?mechanic_id=1
+        [HttpGet("byMechanicId")]
+        public async Task<ActionResult<IEnumerable<RegistrationDTO>>> GetMechanicRegistrations(int mechanic_id)
+        {
+            return await registrationService.GetMechanicRegistrationsAsync(mechanic_id);
+        }
+
         // GET api/<RegistrationsController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RegistrationDTO>> GetRegistration(int id)

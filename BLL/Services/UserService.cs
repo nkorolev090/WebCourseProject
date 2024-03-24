@@ -54,11 +54,11 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(string email, string password, bool isClient)
+        public async Task<IdentityResult> RegisterUserAsync(string email, string password/*, bool isClient*/)
         {
             User user;
-            if (isClient)
-            {
+            //if (isClient)
+            //{
                 Client client = new Client();
                 client.Name = email;
                 client.DiscountId = 1;
@@ -67,15 +67,15 @@ namespace BLL.Services
 
                 Client cl = await db.Clients.CreateAsync(client);
                 user = new() { Email = email, UserName = email, ClientId = cl.Id };
-            }
-            else
-            {
-                Mechanic mechanic = new Mechanic();
-                mechanic.Name = email;
+            //}
+            //else
+            //{
+            //    Mechanic mechanic = new Mechanic();
+            //    mechanic.Name = email;
 
-                Mechanic mech = await db.Mechanics.CreateAsync(mechanic);
-                user = new() { Email = email, UserName = email, MechanicId = mech.Id };
-            }
+            //    Mechanic mech = await db.Mechanics.CreateAsync(mechanic);
+            //    user = new() { Email = email, UserName = email, MechanicId = mech.Id };
+            //}
             
             var result = await _userManager.CreateAsync(user, password);
 

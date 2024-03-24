@@ -9,10 +9,6 @@ namespace lab.Models
         public string Email { get; set; }
 
         [Required]
-        [Display(Name = "IsClient")]
-        public bool IsClient { get; set; }
-
-        [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
