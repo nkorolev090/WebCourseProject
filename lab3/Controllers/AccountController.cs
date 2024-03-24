@@ -1,5 +1,4 @@
-﻿using DomainModel;
-using Interfaces.Services;
+﻿using Interfaces.Services;
 using lab.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,14 +10,10 @@ namespace lab.Controllers
     [Produces("application/json")]
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly IClientService _clientService;
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, IClientService clientService)
+        private readonly IUserService _userService;
+        public AccountController( IUserService userService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _clientService = clientService;
+            _userService = userService;
         }
 
         [HttpPost]
@@ -28,18 +23,12 @@ namespace lab.Controllers
         {
             if (ModelState.IsValid)
             {
-               ClientDTO cl =  await _clientService.CreateClientDTOAsync(new ClientDTO(new Client { Name = model.Email}));
-
-                User user = new() { Email = model.Email, UserName = model.Email, ClientId = cl.id };
-                
                 // Добавление нового пользователя
-                var result = await _userManager.CreateAsync(user, model.Password);
+                var result = await _userService.RegisterUserAsync(model.Email, model.Password, true); // third param?
+
                 if (result.Succeeded)
                 {
-                    // Установка куки
-                    await _signInManager.SignInAsync(user, false);
-                    
-                    return Ok(new { message = "Добавлен новый пользователь: " + user.UserName });
+                    return Ok(new { message = "Добавлен новый пользователь: " + model.Email });
                 }
                 else
                 {
@@ -75,8 +64,7 @@ namespace lab.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result =
-                await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                var result = await _userService.SignInUserAsync(model.Email, model.Password, model.RememberMe);
                 if (result.Succeeded)
                 {
                     return Ok(new { message = "Выполнен вход", userName = model.Email });
@@ -107,29 +95,26 @@ namespace lab.Controllers
         [Route("api/account/logoff")]
         public async Task<IActionResult> LogOff()
         {
-            User usr = await GetCurrentUserAsync();
-            if (usr == null)
+            var result = await _userService.LogOffAsync(HttpContext.User);
+            if (!result)
             {
                 return Unauthorized(new { message = "Сначала выполните вход" });
             }
-            // Удаление куки
-            await _signInManager.SignOutAsync();
-            return Ok(new { message = "Выполнен выход", userName = usr.UserName });
+
+            return Ok(new { message = "Выполнен выход" });
         }
 
         [HttpGet]
         [Route("api/account/isauthenticated")]
         public async Task<IActionResult> IsAuthenticated()
         {
-            User usr = await GetCurrentUserAsync();
-            if (usr == null)
+            var result =  await _userService.IsAuthenticatedAsync(HttpContext.User);
+            if (!result)
             {
                 return Unauthorized(new { message = "Вы Гость. Пожалуйста, выполните вход" });
             }
-            return Ok(new { message = "Сессия активна", userName = usr.UserName });
+            return Ok(new { message = "Сессия активна"});
         
         }
-
-        private Task<User> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
     }
 }
