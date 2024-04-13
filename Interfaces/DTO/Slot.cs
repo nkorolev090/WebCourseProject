@@ -43,7 +43,7 @@ namespace Interfaces.DTO
             }
             
             this.mechanic_id = slot.MechanicId;
-            this.mechanic_name = slot.Mechanic.Surname + " " + slot.Mechanic.Name[0] + ". " + slot.Mechanic.Midname[0] + ".";
+            this.mechanic_name = slot.Mechanic.FullName;
             this.start_time = slot.StartTime;
             this.start_date = slot.StartDate;
             this.finish_time = slot.FinishTime;

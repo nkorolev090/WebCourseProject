@@ -28,30 +28,17 @@ namespace lab2.Controllers
         {
             this.registrationService = registrationService;
         }
-        // GET: api/<RegistrationsController>byClientId?client_id=1
-        [HttpGet("byClientId")]
-        public async Task<ActionResult<IEnumerable<RegistrationDTO>>> GetClientRegistrations(int client_id)
+       // GET: api/<RegistrationsController>
+       [HttpGet]
+        public async Task<ActionResult<IEnumerable<RegistrationDTO>>> GetClientRegistrations()
         {
-            return await registrationService.GetClientRegistrationsAsync(client_id);
-        }
-
-        // GET: api/<RegistrationsController>byMechanicId?mechanic_id=1
-        [HttpGet("byMechanicId")]
-        public async Task<ActionResult<IEnumerable<RegistrationDTO>>> GetMechanicRegistrations(int mechanic_id)
-        {
-            return await registrationService.GetMechanicRegistrationsAsync(mechanic_id);
+            return await registrationService.GetRegistrationsAsync(HttpContext.User);
         }
 
         // GET api/<RegistrationsController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RegistrationDTO>> GetRegistration(int id)
         {
-            //var reg = await _modelAutoService.Registrations.FindAsync(id);
-            //if (reg == null)
-            //{
-            //    return NotFound();
-            //}
-            //return reg;
             var reg = await registrationService.GetItemAsync(id);
             if (reg == null)
             {
@@ -88,15 +75,7 @@ namespace lab2.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                //List<RegistrationDTO> _regs = await registrationService.GetClientRegistrationsAsync(registration.client_id);
-                //if (!_regs.Any(r => r.id == id))
-                //{
-                //    return NotFound();
-                //}
-                //else
-                //{
-                //    throw;
-                //}
+
                 return NotFound();
             }
 

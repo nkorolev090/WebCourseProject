@@ -13,21 +13,12 @@ namespace Interfaces.DTO
     {
         public int id { get; set; }
 
-        public string name { get; set; }
-
-        public string surname { get; set; }
-
-        public string midname { get; set; }
         public string full_name { get; set; }
-        public string phone_number { get; set; }
+
         public MechanicDTO(Mechanic mechanic) 
         { 
             id = mechanic.Id;
-            name = mechanic.Name;
-            surname = mechanic.Surname;
-            midname = mechanic.Midname;
-            phone_number = mechanic.PhoneNumber;
-            full_name = name + " " + midname + " " + surname;
+            full_name = mechanic.FullName;
         }
     }
 }

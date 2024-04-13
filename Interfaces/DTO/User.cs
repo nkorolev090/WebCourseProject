@@ -9,6 +9,11 @@ namespace Interfaces.DTO
     public class UserDTO
     {
         public string id { get; set; }
+        public string? name { get; set; }
+
+        public string? surname { get; set; }
+
+        public string? midname { get; set; }
 
         public string? email { get; set; }
 

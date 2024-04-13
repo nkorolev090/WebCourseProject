@@ -17,7 +17,6 @@ namespace BLL.Services
         public async Task<ClientDTO> CreateClientDTOAsync(ClientDTO p)
         {
             Client client = new Client();
-            client.Name = p.name;
             client.DiscountId = 1;
             client.Discount = await db.Discouts.GetItemAsync(1);
             client.DiscountPoints = 0;

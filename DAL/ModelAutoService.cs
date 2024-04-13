@@ -1,29 +1,15 @@
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using DomainModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Identity;
 
 namespace DAL
 {
     public partial class ModelAutoService : IdentityDbContext<User>
     {
-        //protected readonly IConfiguration configuration;
-
-        //public ModelAutoService(DbContextOptions<ModelAutoService> options)
-        //    : base(options)
-        //{
-        //    this.ChangeTracker.LazyLoadingEnabled = false;
-        //}
         public ModelAutoService()
         {
-            //this.configuration = configuration;
         }
-
+        #region DbSets 
         public virtual DbSet<Breakdown> Breakdowns { get; set; }
 
         public virtual DbSet<Car> Cars { get; set; }
@@ -41,6 +27,7 @@ namespace DAL
         public virtual DbSet<Slot> Slots { get; set; }
 
         public virtual DbSet<Status> Statuses { get; set; }
+        #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
             => optionsBuilder
@@ -56,6 +43,18 @@ namespace DAL
                 //entity.UseTpcMappingStrategy();
                 entity.HasOne(e => e.Mechanic).WithMany().HasForeignKey(e => e.MechanicId).OnDelete(DeleteBehavior.Cascade);
                 entity.HasOne(e => e.Client).WithMany().HasForeignKey(e => e.ClientId).OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.Midname)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("midname");
+                entity.Property(e => e.Name)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("name");
+                entity.Property(e => e.Surname)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("surname");
             });
             modelBuilder.Entity<Breakdown>(entity =>
             {
@@ -112,18 +111,6 @@ namespace DAL
                     .HasColumnName("birth_date");
                 entity.Property(e => e.DiscountId).HasColumnName("discount_id");
                 entity.Property(e => e.DiscountPoints).HasColumnName("discount_points");
-                entity.Property(e => e.Midname)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("midname");
-                entity.Property(e => e.Name)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("name");
-                entity.Property(e => e.Surname)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("surname");
 
                 entity.HasOne(d => d.Discount).WithMany(p => p.Clients)
                     .HasForeignKey(d => d.DiscountId)
@@ -148,18 +135,10 @@ namespace DAL
                 entity.ToTable("Mechanic"/*, e => e.Property(e => e.Id).UseIdentityColumn(2, 2)*/);
                 //entity.UseTptMappingStrategy();
                 entity.Property(e => e.Id).HasColumnName("id");
-                entity.Property(e => e.Midname)
+                entity.Property(e => e.FullName)
                     .HasMaxLength(50)
                     .IsUnicode(false)
-                    .HasColumnName("midname");
-                entity.Property(e => e.Name)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("name");
-                entity.Property(e => e.Surname)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("surname");
+                    .HasColumnName("full_name");
             });
 
             modelBuilder.Entity<MechanicBreakdown>(entity =>

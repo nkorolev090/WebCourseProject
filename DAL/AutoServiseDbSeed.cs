@@ -1,9 +1,7 @@
 ﻿using DomainModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Interfaces.Repository;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DAL
 {
@@ -80,6 +78,53 @@ namespace DAL
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+            }
+        }
+
+        public static async Task CreateUserRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            var dbRepository = serviceProvider.GetRequiredService<IDbRepository>();
+
+            // Создание ролей администратора и пользователя
+            if (await roleManager.FindByNameAsync("mechanic") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("mechanic"));
+            }
+            if (await roleManager.FindByNameAsync("client") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("client"));
+            }
+            // Создание Администратора
+            string adminEmail = "mechanic@mail.com";
+            string adminPassword = "Aa123456!";
+            if (await userManager.FindByNameAsync(adminEmail) == null)
+            {
+                Mechanic mechanic = new Mechanic { FullName = "Иванов Иван Иванович" };
+                mechanic = await dbRepository.Mechanics.CreateAsync(mechanic);
+
+                User admin = new User { Email = adminEmail, UserName = adminEmail, MechanicId = mechanic.Id, Mechanic = mechanic };
+                IdentityResult result = await userManager.CreateAsync(admin, adminPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "mechanic");
+                }
+            }
+            // Создание Пользователя
+            string userEmail = "client@mail.com";
+            string userPassword = "Aa123456!";
+            if (await userManager.FindByNameAsync(userEmail) == null)
+            {
+                Discount discount = await dbRepository.Discouts.GetItemAsync(1);
+                Client client = new Client { DiscountPoints = 0, DiscountId = 1, Discount = discount, BirthDate = DateTime.Parse("01.01.2001")};
+                client = await dbRepository.Clients.CreateAsync(client);
+                User user = new User { Email = userEmail, UserName = userEmail, ClientId = client.Id, Client = client };
+                IdentityResult result = await userManager.CreateAsync(user, userPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "client");
+                }
             }
         }
     }
