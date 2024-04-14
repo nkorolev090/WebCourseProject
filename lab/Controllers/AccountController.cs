@@ -28,7 +28,8 @@ namespace lab.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Ok(new { message = "Добавлен новый пользователь: ", email = model.Email });
+                    var userRole = await _userService.GetUserRole(model.Email);
+                    return Ok(new { message = "Добавлен новый пользователь: ", email = model.Email, userRole });
                 }
                 else
                 {
@@ -67,7 +68,8 @@ namespace lab.Controllers
                 var result = await _userService.SignInUserAsync(model.Email, model.Password, model.RememberMe);
                 if (result.Succeeded)
                 {
-                    return Ok(new { message = "Выполнен вход", email = model.Email });
+                    var userRole = await _userService.GetUserRole(model.Email);
+                    return Ok(new { message = "Выполнен вход", email = model.Email, userRole });
                 }
                 else
                 {
@@ -113,7 +115,8 @@ namespace lab.Controllers
             {
                 return Unauthorized(new { message = "Вы Гость. Пожалуйста, выполните вход" });
             }
-            return Ok(new { message = "Сессия активна", userDTO = result});
+            var userRole = await _userService.GetUserRole(result.email);
+            return Ok(new { message = "Сессия активна", userDTO = result, userRole});
         
         }
     }

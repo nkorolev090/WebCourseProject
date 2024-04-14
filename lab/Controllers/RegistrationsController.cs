@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-//using lab.Models;
 using DAL;
 using Interfaces.DTO;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata;
 using Microsoft.AspNetCore.Cors;
 using Interfaces.Services;
-using BLL.Services;
-using DomainModel;
-using lab.Util;
-using Ninject;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,15 +23,17 @@ namespace lab2.Controllers
         {
             this.registrationService = registrationService;
         }
-       // GET: api/<RegistrationsController>
-       [HttpGet]
-        public async Task<ActionResult<IEnumerable<RegistrationDTO>>> GetClientRegistrations()
+        // GET: api/<RegistrationsController>
+        [HttpGet]
+        [Authorize(Roles = "client, mechanic")]
+        public async Task<ActionResult<IEnumerable<RegistrationDTO>>> GetRegistrations()
         {
             return await registrationService.GetRegistrationsAsync(HttpContext.User);
         }
 
         // GET api/<RegistrationsController>/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "client, mechanic")]
         public async Task<ActionResult<RegistrationDTO>> GetRegistration(int id)
         {
             var reg = await registrationService.GetItemAsync(id);
@@ -50,6 +47,7 @@ namespace lab2.Controllers
         // POST api/<RegistrationsController>
         [HttpPost]
         [ActionName(nameof(PostRegistration))]
+        [Authorize(Roles = "client")]
         public async Task<ActionResult<RegistrationDTO>> PostRegistration(RegistrationDTO registration)
         {
             if (!ModelState.IsValid)
@@ -62,6 +60,7 @@ namespace lab2.Controllers
 
         // PUT api/<RegistrationsController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "client, mechanic")]
         public async Task<IActionResult> PutRegistration(int id, RegistrationDTO registration)
         {
             if (id != registration.id)
@@ -84,6 +83,7 @@ namespace lab2.Controllers
 
         // DELETE api/<RegistrationsController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "client, mechanic")]
         public async Task<IActionResult> DeleteRegistration(int id)
         {
             var res = await registrationService.DeleteRegistrationAsync(id);

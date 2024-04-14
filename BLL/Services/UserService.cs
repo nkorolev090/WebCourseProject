@@ -22,6 +22,15 @@ namespace BLL.Services
             this._clientService = clientService;
             this._mechanicService = mechanicService;
         }
+
+        public async Task<string?> GetUserRole(string currUserEmail)
+        {
+            User user = await _userManager.FindByEmailAsync(currUserEmail);
+            IList<string>? roles = await _userManager.GetRolesAsync(user);
+            string? userRole = roles.FirstOrDefault();
+            return userRole;
+        }
+
         public async Task<UserDTO?> IsAuthenticatedAsync(ClaimsPrincipal currUser)
         {
             User usr = await GetCurrentUserAsync(currUser);
@@ -33,8 +42,8 @@ namespace BLL.Services
             {
                 id = usr.Id,
                 isClient = usr.ClientId == null ? false : true,
-                //Client = usr.ClientId == null ? null : await _clientService.GetClientDTOAsync((int)(usr.ClientId)),
-                //Mechanic = usr.MechanicId == null ? null : await _mechanicService.GetMechanicAsync((int)(usr.MechanicId)),
+                Client = usr.ClientId == null ? null : await _clientService.GetClientDTOAsync((int)(usr.ClientId)),
+                Mechanic = usr.MechanicId == null ? null : await _mechanicService.GetMechanicAsync((int)(usr.MechanicId)),
                 userName = usr.UserName,
                 email = usr.Email,
                 phoneNumber = usr.PhoneNumber,
@@ -54,7 +63,7 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(string email, string password/*, bool isClient*/)
+        public async Task<IdentityResult> RegisterUserAsync(string email, string password)
         {
             User user;
 
@@ -70,6 +79,7 @@ namespace BLL.Services
 
             if (result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user, "client");
                 // Установка куки
                 await _signInManager.SignInAsync(user, false);
 
