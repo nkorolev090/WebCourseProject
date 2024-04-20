@@ -4,6 +4,18 @@ namespace lab.Models
 {
     public class RegisterViewModel
     {
+        [Display(Name = "Name")]
+        public string? Name { get; set; } = null;
+
+        [Display(Name = "Midname")]
+        public string? Midname { get; set; } = null;
+
+        [Display(Name = "Surname")]
+        public string? Surname { get; set; } = null;
+
+        [Display(Name = "PhoneNumber")]
+        public string? PhoneNumber { get; set; } = null;
+
         [Required]
         [Display(Name = "Email")]
         public string Email { get; set; }

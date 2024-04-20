@@ -24,7 +24,7 @@ namespace lab.Controllers
             if (ModelState.IsValid)
             {
                 // Добавление нового пользователя
-                var result = await _userService.RegisterUserAsync(model.Email, model.Password);
+                var result = await _userService.RegisterUserAsync(model.Name, model.Midname, model.Surname, model.PhoneNumber, model.Email, model.Password);
 
                 if (result.Succeeded)
                 {

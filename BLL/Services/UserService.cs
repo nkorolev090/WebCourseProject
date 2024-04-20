@@ -63,17 +63,17 @@ namespace BLL.Services
             return true;
         }
 
-        public async Task<IdentityResult> RegisterUserAsync(string email, string password)
+        public async Task<IdentityResult> RegisterUserAsync(string? name, string? midname, string? surname, string? phoneNumber, string email, string password)
         {
             User user;
 
-                Client client = new Client();
-                client.DiscountId = 1;
-                client.Discount = await db.Discouts.GetItemAsync(1);
-                client.DiscountPoints = 0;
+            Client client = new Client();
+            client.DiscountId = 1;
+            client.Discount = await db.Discouts.GetItemAsync(1);
+            client.DiscountPoints = 0;
 
-                Client cl = await db.Clients.CreateAsync(client);
-                user = new() { Email = email, UserName = email, ClientId = cl.Id };
+            Client cl = await db.Clients.CreateAsync(client);
+            user = new() {Name = name, Midname = midname, Surname = surname, PhoneNumber = phoneNumber, Email = email, UserName = email, ClientId = cl.Id };
             
             var result = await _userManager.CreateAsync(user, password);
 

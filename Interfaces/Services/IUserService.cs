@@ -6,7 +6,7 @@ namespace Interfaces.Services
 {
     public interface IUserService
     {
-        Task<IdentityResult> RegisterUserAsync(string email, string password/*, bool isClient*/);
+        Task<IdentityResult> RegisterUserAsync(string? name, string? midname, string? surname, string? phoneNumber, string email, string password);
 
         Task<SignInResult> SignInUserAsync(string email, string password, bool isPersistent);
 
