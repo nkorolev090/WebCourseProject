@@ -25,6 +25,7 @@ builder.Services.AddDbContext<ModelAutoService>();
 builder.Services.AddScoped<IDbRepository, DbRepositorySQL>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<ISlotService, SlotService>();
+builder.Services.AddScoped<IBreakdownService, BreakdownService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IMechanicService, MechanicService>();
 builder.Services.AddScoped<IUserService, UserService>();
