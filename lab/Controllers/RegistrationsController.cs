@@ -16,7 +16,6 @@ namespace lab2.Controllers
     public class RegistrationsController : ControllerBase
     {
 
-        private readonly ModelAutoService _modelAutoService;
         private readonly IRegistrationService registrationService;
 
         public RegistrationsController(IRegistrationService registrationService)

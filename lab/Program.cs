@@ -24,6 +24,7 @@ builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<Mode
 builder.Services.AddDbContext<ModelAutoService>();
 builder.Services.AddScoped<IDbRepository, DbRepositorySQL>();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
+builder.Services.AddScoped<ISlotService, SlotService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IMechanicService, MechanicService>();
 builder.Services.AddScoped<IUserService, UserService>();

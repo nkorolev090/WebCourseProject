@@ -105,10 +105,8 @@ namespace BLL.Services
                 }  
             }
             Registration reg = await db.Registrations.GetItemAsync(registration.id);
-            reg.RegPrice = registration.reg_price;
             reg.Info = registration.info;
             reg.CarId = registration.car_id;
-            reg.RegDate = registration.reg_date;
             reg.Car = await db.Cars.GetItemAsync(registration.car_id);
             List<Slot> _slots = await db.Slots.GetListAsync();
             reg.Slots = _slots.Where(i => i.RegistrationId == registration.id).ToList();
