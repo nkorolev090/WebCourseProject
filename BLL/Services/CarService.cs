@@ -7,13 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DomainModel;
+using System.Security.Claims;
 
 namespace BLL.Services
 {
     public class CarService : ICarService
     {
-        IDbRepository db;
-        public CarService(IDbRepository db) { this.db = db; }
+        private readonly IDbRepository db;
+        private readonly IUserService userService;
+        public CarService(IDbRepository db, IUserService userService) { this.db = db; this.userService = userService; }
 
         public async void CreateCarDTOAsync(CarDTO p)
         {
@@ -34,10 +36,17 @@ namespace BLL.Services
            return cars.Select(i => new CarDTO(i)).ToList();
         }
 
-        public async Task<List<CarDTO>> GetAllClientCarDTOAsync(int owner_id)
+        public async Task<List<CarDTO>?> GetAllClientCarDTOAsync(ClaimsPrincipal currUser)
         {
-            List<Car> cars = await db.Cars.GetListAsync();
-            return cars.Where(i => i.OwnerId == owner_id).Select(a => new CarDTO(a)).ToList();
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+
+            if (user?.Client != null)
+            {
+                List<Car> cars = await db.Cars.GetListAsync();
+                return cars.Where(i => i.OwnerId == user?.Client.id).Select(a => new CarDTO(a)).ToList();
+            }
+
+            return null;
         }
         public async Task<CarDTO> GetCarDTOAsync(int id)
         {
