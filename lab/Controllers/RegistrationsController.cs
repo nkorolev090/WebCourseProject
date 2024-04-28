@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Cors;
 using Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
+using Interfaces.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -47,13 +48,14 @@ namespace lab2.Controllers
         [HttpPost]
         [ActionName(nameof(PostRegistration))]
         [Authorize(Roles = "client")]
-        public async Task<ActionResult<RegistrationDTO>> PostRegistration(RegistrationDTO registration)
+        public async Task<ActionResult<RegistrationDTO>> PostRegistration(RegistrationViewModel registration)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             RegistrationDTO _reg = await registrationService.CreateRegistrationAsync(registration);
+
             return CreatedAtAction("GetRegistration", new { id = _reg.id }, _reg);
         }
 

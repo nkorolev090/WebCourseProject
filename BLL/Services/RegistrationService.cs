@@ -1,13 +1,9 @@
 ﻿using DomainModel;
 using Interfaces.DTO;
+using Interfaces.Models;
 using Interfaces.Repository;
 using Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -15,18 +11,31 @@ namespace BLL.Services
     {
         private readonly IDbRepository db;
         private readonly IUserService userService;
-        public RegistrationService(IDbRepository db, IUserService userService) { this.db = db; this.userService = userService; }
-        public async Task<RegistrationDTO> CreateRegistrationAsync(RegistrationDTO registration)//тип возвращаемого значения и логика слотов
+        private readonly ISlotService slotService;
+        public RegistrationService(IDbRepository db, IUserService userService, ISlotService slotService) 
+        { 
+            this.db = db;
+            this.userService = userService;
+            this.slotService = slotService;
+        }
+        public async Task<RegistrationDTO> CreateRegistrationAsync(RegistrationViewModel registration)//тип возвращаемого значения и логика слотов
         {
             Registration reg = new Registration();
-            reg.CarId = registration.car_id;
-            reg.RegPrice = registration.reg_price;
-            reg.Info = registration.info;
-            reg.RegDate = registration.reg_date;
-            reg.Status = registration.status;
-            reg.Car = await db.Cars.GetItemAsync(registration.car_id);
-            reg.StatusNavigation = await db.Statuses.GetItemAsync(registration.status);
+            reg.CarId = registration.Registration.car_id;
+            reg.RegPrice = registration.Registration.reg_price;
+            reg.Info = registration.Registration.info;
+            reg.RegDate = DateTime.Parse(registration.Registration.reg_date);
+            reg.Status = registration.Registration.status;
+            reg.Car = await db.Cars.GetItemAsync(registration.Registration.car_id);
+            reg.StatusNavigation = await db.Statuses.GetItemAsync(registration.Registration.status);
             Registration registration1 = await db.Registrations.CreateAsync(reg);
+
+            foreach(SlotDTO slot in registration.Slots)
+            {
+                slot.registration_id = registration1.Id;
+                await slotService.UpdateSlotAsync(slot);
+            }
+
             return new RegistrationDTO(registration1);
             
         }

@@ -18,8 +18,8 @@ namespace BLL.Services
         public async Task<SlotDTO> CreateSlotAsync(SlotDTO slotDTO)
         {
             Slot slot = new Slot();
-            slot.StartDate = slotDTO.start_date;
-            slot.StartTime = slotDTO.start_time;
+            slot.StartDate = DateTime.Parse(slotDTO.start_date);
+            slot.StartTime = TimeSpan.Parse(slotDTO.start_time);
             slot.RegistrationId = slotDTO.registration_id;
             if(slot.RegistrationId != null)
             {
@@ -125,13 +125,13 @@ namespace BLL.Services
             return new SlotDTO(_slot);
         }
 
-        public async void UpdateSlotAsync(SlotDTO slot)
+        public async Task UpdateSlotAsync(SlotDTO slot)
         {
             Slot s = await db.Slots.GetItemAsync(slot.id);
-            s.StartTime = slot.start_time;
-            s.StartDate = slot.start_date;
-            s.FinishDate = slot.finish_date;
-            s.FinishTime = slot.finish_time;
+            s.StartTime = TimeSpan.Parse(slot.start_time);
+            s.StartDate = DateTime.Parse(slot.start_date);
+            s.FinishDate = DateTime.Parse(slot.finish_date);
+            s.FinishTime = TimeSpan.Parse(slot.finish_time);
             s.MechanicId = slot.mechanic_id;
             s.BreakdownId = slot.breakdown_id;
             s.Mechanic = await db.Mechanics.GetItemAsync(slot.mechanic_id);

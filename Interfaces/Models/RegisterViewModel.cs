@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace lab.Models
+namespace Interfaces.Models
 {
     public class RegisterViewModel
     {

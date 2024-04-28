@@ -18,7 +18,7 @@ namespace Interfaces.DTO
 
         public string? car_name {  get; set; }
 
-        public DateTime? reg_date {  get; set; }
+        public string? reg_date {  get; set; }
 
         public string? info { get; set; }
 
@@ -38,7 +38,7 @@ namespace Interfaces.DTO
             status = registration.Status;
             status_name = registration.StatusNavigation.Name;
             reg_price = registration.RegPrice;
-            reg_date = registration.RegDate;
+            reg_date = registration.RegDate?.ToShortDateString();
         }
        
         public RegistrationDTO()
