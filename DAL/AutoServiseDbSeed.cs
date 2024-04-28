@@ -38,8 +38,7 @@ namespace DAL
                         new Status{Name = "На обработке"},
                         new Status{Name = "Одобрена"},
                         new Status{Name = "Отклонена"},
-                        new Status{Name = "Завершена"},
-                        new Status{Name = "Гарантийный ремонт"}
+                        new Status{Name = "Завершена"}
                     };
 
                     await modelAutoService.Statuses.AddRangeAsync(statuses);
@@ -87,7 +86,7 @@ namespace DAL
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var dbRepository = serviceProvider.GetRequiredService<IDbRepository>();
 
-            // Создание ролей администратора и пользователя
+            // Создание ролей механика и пользователя
             if (await roleManager.FindByNameAsync("mechanic") == null)
             {
                 await roleManager.CreateAsync(new IdentityRole("mechanic"));
@@ -96,16 +95,31 @@ namespace DAL
             {
                 await roleManager.CreateAsync(new IdentityRole("client"));
             }
-            // Создание Администратора
-            string adminEmail = "mechanic@mail.com";
-            string adminPassword = "Aa123456!";
-            if (await userManager.FindByNameAsync(adminEmail) == null)
+            // Создание механика
+            string mechanicEmail = "mechanic@mail.com";
+            string mechanicPassword = "Aa123456!";
+            if (await userManager.FindByNameAsync(mechanicEmail) == null)
             {
                 Mechanic mechanic = new Mechanic { FullName = "Иванов Иван Иванович" };
                 mechanic = await dbRepository.Mechanics.CreateAsync(mechanic);
 
-                User admin = new User { Email = adminEmail, UserName = adminEmail, MechanicId = mechanic.Id, Mechanic = mechanic };
-                IdentityResult result = await userManager.CreateAsync(admin, adminPassword);
+                User admin = new User { Email = mechanicEmail, UserName = mechanicEmail, MechanicId = mechanic.Id, Mechanic = mechanic };
+                IdentityResult result = await userManager.CreateAsync(admin, mechanicPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(admin, "mechanic");
+                }
+            }
+
+            mechanicEmail = "mechanic2@mail.com";
+            mechanicPassword = "Aa123456!";
+            if (await userManager.FindByNameAsync(mechanicEmail) == null)
+            {
+                Mechanic mechanic = new Mechanic { FullName = "Смирнов Виталий Иванович" };
+                mechanic = await dbRepository.Mechanics.CreateAsync(mechanic);
+
+                User admin = new User { Email = mechanicEmail, UserName = mechanicEmail, MechanicId = mechanic.Id, Mechanic = mechanic };
+                IdentityResult result = await userManager.CreateAsync(admin, mechanicPassword);
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(admin, "mechanic");
