@@ -18,10 +18,12 @@ namespace lab2.Controllers
     {
 
         private readonly IRegistrationService registrationService;
+        private readonly ISlotService slotService;
 
-        public RegistrationsController(IRegistrationService registrationService)
+        public RegistrationsController(IRegistrationService registrationService, ISlotService slotService)
         {
             this.registrationService = registrationService;
+            this.slotService = slotService;
         }
         // GET: api/<RegistrationsController>
         [HttpGet]
@@ -34,14 +36,15 @@ namespace lab2.Controllers
         // GET api/<RegistrationsController>/5
         [HttpGet("{id}")]
         [Authorize(Roles = "client, mechanic")]
-        public async Task<ActionResult<RegistrationDTO>> GetRegistration(int id)
+        public async Task<ActionResult<RegistrationViewModel>> GetRegistration(int id)
         {
             var reg = await registrationService.GetItemAsync(id);
-            if (reg == null)
+            var slots = await slotService.GetRegistrationSlotsAsync(id);
+            if (reg == null && slots == null)
             {
                 return NotFound();
             }
-            return reg;
+            return new RegistrationViewModel { Registration = reg, Slots = slots };
         }
 
         // POST api/<RegistrationsController>
