@@ -16,12 +16,13 @@ namespace lab2.Controllers
     [ApiController]
     public class RegistrationsController : ControllerBase
     {
-
+        private readonly ILogger _logger;
         private readonly IRegistrationService registrationService;
         private readonly ISlotService slotService;
 
-        public RegistrationsController(IRegistrationService registrationService, ISlotService slotService)
+        public RegistrationsController(ILogger<RegistrationsController> logger, IRegistrationService registrationService, ISlotService slotService)
         {
+            _logger = logger;
             this.registrationService = registrationService;
             this.slotService = slotService;
         }

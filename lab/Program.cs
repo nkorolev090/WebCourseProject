@@ -5,8 +5,15 @@ using Interfaces.Services;
 using Interfaces.Repository;
 using DAL.Repository;
 using DomainModel;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddFile(o => o.RootPath = (AppContext.BaseDirectory));
+builder.Logging.AddSerilog(new LoggerConfiguration().WriteTo.File(
+        "logs/log.log",
+        rollingInterval: RollingInterval.Hour).CreateLogger());
+
 
 builder.Services.AddCors(options =>
 {
@@ -20,6 +27,7 @@ options.AddDefaultPolicy(
 });
 
 // Add services to the container.
+
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ModelAutoService>();
 builder.Services.AddDbContext<ModelAutoService>();
 builder.Services.AddScoped<IDbRepository, DbRepositorySQL>();
