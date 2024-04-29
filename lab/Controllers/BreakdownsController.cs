@@ -10,10 +10,12 @@ namespace lab.Controllers
     [ApiController]
     public class BreakdownsController : ControllerBase
     {
+        private readonly ILogger _logger;
         private readonly IBreakdownService breakdownService;
 
-        public BreakdownsController(IBreakdownService breakdownService)
+        public BreakdownsController(ILogger<BreakdownsController> logger, IBreakdownService breakdownService)
         {
+            _logger = logger;
             this.breakdownService = breakdownService;
         }
 
@@ -21,15 +23,17 @@ namespace lab.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BreakdownDTO>>> Get()
         {
-            return await breakdownService.GetAllBreakdownsAsync();
-        }
+            try
+            {
+                return await breakdownService.GetAllBreakdownsAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
 
-        // GET api/<BreakdownsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
         }
-
     }
 }

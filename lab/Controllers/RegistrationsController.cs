@@ -29,9 +29,20 @@ namespace lab2.Controllers
         // GET: api/<RegistrationsController>
         [HttpGet]
         [Authorize(Roles = "client, mechanic")]
-        public async Task<ActionResult<IEnumerable<RegistrationDTO>>> GetRegistrations()
+        public async Task<ActionResult<IEnumerable<RegistrationDTO>?>> GetRegistrations()
         {
-            return await registrationService.GetRegistrationsAsync(HttpContext.User);
+            try
+            {
+                var response = await registrationService.GetRegistrationsAsync(HttpContext.User);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
+            
         }
 
         // GET api/<RegistrationsController>/5
@@ -39,13 +50,22 @@ namespace lab2.Controllers
         [Authorize(Roles = "client, mechanic")]
         public async Task<ActionResult<RegistrationViewModel>> GetRegistration(int id)
         {
-            var reg = await registrationService.GetItemAsync(id);
-            var slots = await slotService.GetRegistrationSlotsAsync(id);
-            if (reg == null && slots == null)
+            try
             {
-                return NotFound();
+                var reg = await registrationService.GetItemAsync(id);
+                var slots = await slotService.GetRegistrationSlotsAsync(id);
+                if (reg == null && slots == null)
+                {
+                    return NotFound();
+                }
+                return new RegistrationViewModel { Registration = reg, Slots = slots };
             }
-            return new RegistrationViewModel { Registration = reg, Slots = slots };
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
         }
 
         // POST api/<RegistrationsController>
@@ -54,13 +74,22 @@ namespace lab2.Controllers
         [Authorize(Roles = "client")]
         public async Task<ActionResult<RegistrationDTO>> PostRegistration(RegistrationViewModel registration)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
-            }
-            RegistrationDTO _reg = await registrationService.CreateRegistrationAsync(registration);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                RegistrationDTO _reg = await registrationService.CreateRegistrationAsync(registration);
 
-            return CreatedAtAction("GetRegistration", new { id = _reg.id }, _reg);
+                return CreatedAtAction("GetRegistration", new { id = _reg.id }, _reg);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
         }
 
         // PUT api/<RegistrationsController>/5
@@ -68,6 +97,7 @@ namespace lab2.Controllers
         [Authorize(Roles = "client, mechanic")]
         public async Task<IActionResult> PutRegistration(int id, RegistrationDTO registration)
         {
+
             if (id != registration.id)
             {
                 return BadRequest();
@@ -91,12 +121,16 @@ namespace lab2.Controllers
         [Authorize(Roles = "client, mechanic")]
         public async Task<IActionResult> DeleteRegistration(int id)
         {
-            var res = await registrationService.DeleteRegistrationAsync(id);
-            
-            if (!res)
+            try
             {
+                await registrationService.DeleteRegistrationAsync(id);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
                 return NotFound();
             }
+
             return NoContent();
         }
     }

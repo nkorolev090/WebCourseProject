@@ -10,42 +10,28 @@ namespace lab.Controllers
     [ApiController]
     public class CarsController : ControllerBase
     {
+        private readonly ILogger _logger;
         private readonly ICarService carService;
 
-        public CarsController(ICarService carService)
+        public CarsController(ILogger<CarsController> logger, ICarService carService)
         {
+            _logger = logger;
             this.carService = carService;
         }
         // GET: api/<CarsController>
         [HttpGet]
-        public async Task<IEnumerable<CarDTO>> Get()
+        public async Task<ActionResult<IEnumerable<CarDTO>>> Get()
         {
-            return await carService.GetAllClientCarDTOAsync(HttpContext.User);
-        }
-
-        // GET api/<CarsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<CarsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<CarsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<CarsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            try
+            {
+                return await carService.GetAllClientCarDTOAsync(HttpContext.User);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
         }
     }
 }

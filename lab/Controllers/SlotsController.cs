@@ -11,10 +11,12 @@ namespace lab.Controllers
     [ApiController]
     public class SlotsController : ControllerBase
     {
+        private readonly ILogger _logger;
         private readonly ISlotService slotService;
 
-        public SlotsController(ISlotService slotService)
+        public SlotsController(ILogger<SlotsController> logger, ISlotService slotService)
         {
+            _logger = logger;
             this.slotService = slotService;
         }
         // GET: api/Slots/byDateBreakdown?date=a&breakdown_id=b
@@ -22,22 +24,17 @@ namespace lab.Controllers
         [Authorize(Roles = "client")]
         public async Task<ActionResult<IEnumerable<SlotDTO>>> Get(string date, int breakdown_id)
         {
-            DateTime dateTime = DateTime.Parse(date);
-            return await slotService.GetSlotsByDate_BreakdownAsync(dateTime, breakdown_id);
+            try
+            {
+                DateTime dateTime = DateTime.Parse(date);
+                return await slotService.GetSlotsByDate_BreakdownAsync(dateTime, breakdown_id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
         }
-
-        // GET api/<SlotsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // PUT api/<SlotsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
     }
 }
