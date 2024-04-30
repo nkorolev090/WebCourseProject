@@ -18,7 +18,7 @@ namespace BLL.Services
             this.userService = userService;
             this.slotService = slotService;
         }
-        public async Task<RegistrationDTO> CreateRegistrationAsync(RegistrationViewModel registration)//тип возвращаемого значения и логика слотов
+        public async Task<RegistrationDTO> CreateRegistrationAsync(RegistrationViewModel registration)//Метод создания записи
         {
             Registration reg = new Registration();
             reg.CarId = registration.Registration.car_id;
@@ -39,14 +39,14 @@ namespace BLL.Services
             return new RegistrationDTO(registration1);
             
         }
-        public async Task<RegistrationDTO> GetItemAsync(int id)
+        public async Task<RegistrationDTO> GetItemAsync(int id)//Метод возвращающий запись по id
         {
             Registration registration = await db.Registrations.GetItemAsync(id);
             if(registration == null) { return null; }
             return new RegistrationDTO(registration);
         }
 
-        public async Task<List<RegistrationDTO>?> GetRegistrationsAsync(ClaimsPrincipal currUser)
+        public async Task<List<RegistrationDTO>?> GetRegistrationsAsync(ClaimsPrincipal currUser)//Метод возвращающий все записи текущего пользователя
         {
             UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
 
@@ -66,7 +66,7 @@ namespace BLL.Services
                 }
             }
         }
-        private async Task<List<RegistrationDTO>> GetClientRegistrationsAsync(int client_id) {
+        private async Task<List<RegistrationDTO>> GetClientRegistrationsAsync(int client_id) {//Метод возвращающий все записи пользователя как клиента
 
             List<Registration> list = await db.Registrations.GetListAsync();
             return list.Where(i => i.Car.OwnerId == client_id).ToList().Select(i => new RegistrationDTO(i)).ToList();
@@ -83,7 +83,7 @@ namespace BLL.Services
             return new StatusDTO(status);
         }
 
-        private async Task<List<RegistrationDTO>> GetMechanicRegistrationsAsync(int mechanic_id)
+        private async Task<List<RegistrationDTO>> GetMechanicRegistrationsAsync(int mechanic_id)//Метод возвращающий все записи пользователя как механика
         {
             List<Slot> _regs = await db.Slots.GetListAsync();
             List<RegistrationDTO> regs = _regs.Where(i => i.RegistrationId != null && i.MechanicId == mechanic_id).ToList().Select(i => new RegistrationDTO(i.Registration)).ToList();
@@ -99,7 +99,7 @@ namespace BLL.Services
             return regsRet;
         }
 
-        public async Task<int> UpdateRegistrationAsync(RegistrationDTO registration)
+        public async Task<int> UpdateRegistrationAsync(RegistrationDTO registration)//Метод обновления записи
         {
             if(registration.status == 3)//если заявка отклонена то необходимо освободить слоты
             {
@@ -125,7 +125,7 @@ namespace BLL.Services
 
         }
 
-        public async Task<bool> DeleteRegistrationAsync(int registration_id)
+        public async Task<bool> DeleteRegistrationAsync(int registration_id)//Метод удаления записи
         {
             Registration registration = await db.Registrations.GetItemAsync(registration_id);
             if (registration == null)
