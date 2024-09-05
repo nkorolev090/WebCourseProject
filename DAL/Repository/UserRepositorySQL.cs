@@ -23,7 +23,7 @@ namespace DAL.Repository
             throw new NotImplementedException();
         }
 
-        public Task<User>? GetItemAsync(int id)
+        public Task<User?> GetItemAsync(int id)
         {
             throw new NotImplementedException();
         }

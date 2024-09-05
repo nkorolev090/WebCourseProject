@@ -26,7 +26,7 @@ namespace DAL.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<Mechanic>? GetItemAsync(int id)
+        public async Task<Mechanic?> GetItemAsync(int id)
         {
             return await db.Mechanics.FindAsync(id);
         }

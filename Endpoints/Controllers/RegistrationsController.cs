@@ -9,7 +9,7 @@ using Interfaces.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace lab2.Controllers
+namespace Endpoints.Controllers
 {
     [Route("api/[controller]")]
     [EnableCors]

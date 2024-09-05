@@ -4,6 +4,7 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ModelAutoService))]
-    partial class ModelAutoServiceModelSnapshot : ModelSnapshot
+    [Migration("20240905184757_AddCart5")]
+    partial class AddCart5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,16 +151,11 @@ namespace DAL.Migrations
 
                     b.Property<int?>("CartId")
                         .HasColumnType("int")
-                        .HasColumnName("slot_id");
-
-                    b.Property<int>("SlotId")
-                        .HasColumnType("int");
+                        .HasColumnName("cart_id");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
-
-                    b.HasIndex("SlotId");
 
                     b.ToTable("CartItem", (string)null);
                 });
@@ -695,16 +693,7 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_CartItem_Cart");
 
-                    b.HasOne("DomainModel.Slot", "Slot")
-                        .WithMany("CartItems")
-                        .HasForeignKey("SlotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CartItem_Slot");
-
                     b.Navigation("Cart");
-
-                    b.Navigation("Slot");
                 });
 
             modelBuilder.Entity("DomainModel.Client", b =>
@@ -893,11 +882,6 @@ namespace DAL.Migrations
             modelBuilder.Entity("DomainModel.Registration", b =>
                 {
                     b.Navigation("Slots");
-                });
-
-            modelBuilder.Entity("DomainModel.Slot", b =>
-                {
-                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("DomainModel.Status", b =>

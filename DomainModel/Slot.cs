@@ -26,4 +26,6 @@ public partial class Slot
     public virtual Mechanic Mechanic { get; set; } = null!;
 
     public virtual Registration? Registration { get; set; }
+
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 }

@@ -30,7 +30,7 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<Registration>? GetItemAsync(int id)
+        public async Task<Registration?> GetItemAsync(int id)
         {
             return await db.Registrations.FindAsync(id);
         }

@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "lab", "lab.csproj", "{FA2F661C-6CA5-4DA0-B9F5-38DD880D4AB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endpoints", "Endpoints.csproj", "{FA2F661C-6CA5-4DA0-B9F5-38DD880D4AB3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{3643E919-1EA8-40CC-8B42-8F1C8F61E20C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApplicationCore", "ApplicationCore", "{7A9D7A4E-ED13-455B-B84B-E8E3F0DC1D51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DomainModel", "..\DomainModel\DomainModel.csproj", "{FE24592B-DB18-4483-9309-BCB6A2E12788}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainModel", "..\DomainModel\DomainModel.csproj", "{FE24592B-DB18-4483-9309-BCB6A2E12788}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces", "..\Interfaces\Interfaces.csproj", "{3F9F0E80-BFC1-436D-B868-7C6B4482BA99}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Interfaces", "..\Interfaces\Interfaces.csproj", "{3F9F0E80-BFC1-436D-B868-7C6B4482BA99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "..\BLL\BLL.csproj", "{83C7AB68-271E-42A9-88FB-C61B6A9692D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLL", "..\BLL\BLL.csproj", "{83C7AB68-271E-42A9-88FB-C61B6A9692D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "..\DAL\DAL.csproj", "{A86D6096-9C84-4859-85A0-9307D3ADD6D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "..\DAL\DAL.csproj", "{A86D6096-9C84-4859-85A0-9307D3ADD6D3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

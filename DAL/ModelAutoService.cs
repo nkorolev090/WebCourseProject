@@ -27,6 +27,14 @@ namespace DAL
         public virtual DbSet<Slot> Slots { get; set; }
 
         public virtual DbSet<Status> Statuses { get; set; }
+
+        public virtual DbSet<LoyaltyEvent> LoyaltyEvents { get; set; }
+
+        public virtual DbSet<Promocode> Promocode { get; set; }
+
+        public virtual DbSet<CartItem> CartItems { get; set; }
+
+        public virtual DbSet<Cart> Carts { get; set; }
         #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -37,6 +45,51 @@ namespace DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Promocode>(entity =>
+            {
+                entity.ToTable("Promocode");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Title).HasColumnName("title");
+                entity.Property(e => e.DiscountValue).HasColumnName("discountValue");
+            });
+
+            modelBuilder.Entity<CartItem>(entity =>
+            {
+                entity.ToTable("CartItem");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.CartId).HasColumnName("cart_id");
+                entity.Property(e => e.CartId).HasColumnName("slot_id");
+                entity.HasOne(e => e.Cart).WithMany(e => e.CartItems).HasForeignKey(e => e.CartId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_CartItem_Cart");
+                entity.HasOne(e => e.Slot).WithMany(e => e.CartItems).HasForeignKey(e => e.SlotId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_CartItem_Slot");
+            });
+
+            modelBuilder.Entity<Cart>(entity =>
+            {
+                entity.ToTable("Cart");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Total).HasColumnName("total");
+                entity.Property(e => e.PromocodeId).HasColumnName("promocode_id");
+                entity.Property(e => e.ClientId).HasColumnName("client_id");
+                entity.HasOne(e => e.Promocode).WithMany(e => e.Carts).HasForeignKey(e => e.PromocodeId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Cart_Promocode");
+                entity.HasOne(e => e.Client).WithOne(e => e.Cart).HasForeignKey<Cart>(e => e.ClientId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Cart_Client");
+            });
+
+            modelBuilder.Entity<LoyaltyEvent>(entity =>
+            {
+                entity.ToTable("LoyaltyEvent");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.DiscountPoints).HasColumnName("discount_points");
+                entity.Property(e => e.ImageURL).HasColumnName("image_url");
+                entity.Property(e => e.Title)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("title");
+            });
 
             modelBuilder.Entity<User>(entity =>
             {
@@ -116,6 +169,8 @@ namespace DAL
                     .HasForeignKey(d => d.DiscountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Client_Discount");
+
+                entity.Property(e => e.CartId).HasColumnName("cart_id");
             });
 
             modelBuilder.Entity<Discount>(entity =>

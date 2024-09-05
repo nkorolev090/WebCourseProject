@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Interfaces.DTO;
 
-namespace lab.Controllers
+namespace Endpoints.Controllers
 {
     [Produces("application/json")]
     public class AccountController : Controller

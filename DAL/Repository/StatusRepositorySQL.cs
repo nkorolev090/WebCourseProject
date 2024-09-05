@@ -11,7 +11,7 @@ namespace DAL.Repository
 {
     public class StatusRepositorySQL : IRepository<Status>
     {
-        ModelAutoService db;
+        private readonly ModelAutoService db;
         public StatusRepositorySQL(ModelAutoService db) { this.db = db; }
 
         public Task<Status> CreateAsync(Status item)
@@ -24,7 +24,7 @@ namespace DAL.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<Status>? GetItemAsync(int id)
+        public async Task<Status?> GetItemAsync(int id)
         {
             return await db.Statuses.FindAsync(id);
         }

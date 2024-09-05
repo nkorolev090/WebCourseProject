@@ -18,6 +18,7 @@ namespace Interfaces.Repository
         IRepository<MechanicBreakdown> Mechanic_Breakdowns {  get; }
         IRepository<Status> Statuses { get; }
         IRepository<Discount> Discouts {  get; }
+        IRepository<LoyaltyEvent> LoyaltyEvents { get; }
         Task<int> SaveAsync();
     }
 }

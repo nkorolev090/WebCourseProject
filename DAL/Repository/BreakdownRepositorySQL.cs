@@ -13,11 +13,9 @@ namespace DAL.Repository
     {
         ModelAutoService db;
         public BreakdownRepositorySQL(ModelAutoService db) { this.db = db; }
-        public async Task<Breakdown> CreateAsync(Breakdown item)
+        public Task<Breakdown> CreateAsync(Breakdown item)
         {
-           //db.Breakdowns.Add(item);
            throw new NotImplementedException();
-          
         }
 
         public async void DeleteAsync(int id)
@@ -29,7 +27,7 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<Breakdown>? GetItemAsync(int id)
+        public async Task<Breakdown?> GetItemAsync(int id)
         {
            return await db.Breakdowns.FindAsync(id);
         }

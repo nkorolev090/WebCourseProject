@@ -23,10 +23,11 @@ namespace DAL.Repository
         private MechanicBreakdownRepositorySQL mechanicBreakdownRepository;
         private StatusRepositorySQL statusRepository;
         private DiscountRepositorySQL discountRepository;
+        private LoyaltyEventRepositorySQL loyaltyEventRepository;
+
         public DbRepositorySQL(ModelAutoService db) {
             this.db = db;
         }
-
 
         public IRepository<Client> Clients 
         {
@@ -39,8 +40,6 @@ namespace DAL.Repository
                 return clientRepository;
             }
         }
-
-        
 
         public IRepository<Car> Cars
         {
@@ -114,7 +113,6 @@ namespace DAL.Repository
             }
         }
 
-
         public IRepository<Status> Statuses
         {
             get
@@ -126,6 +124,7 @@ namespace DAL.Repository
                 return statusRepository;
             }
         }
+
         public IRepository<Discount> Discouts
         {
             get
@@ -137,6 +136,19 @@ namespace DAL.Repository
                 return discountRepository;
             }
         }
+
+        public IRepository<LoyaltyEvent> LoyaltyEvents
+        {
+            get
+            {
+                if (loyaltyEventRepository == null)
+                {
+                    loyaltyEventRepository = new LoyaltyEventRepositorySQL(db);
+                }
+                return loyaltyEventRepository;
+            }
+        }
+
         public async Task<int> SaveAsync()
         {
             return await db.SaveChangesAsync();

@@ -10,7 +10,7 @@ namespace Interfaces.Repository
     {
         Task<List<T>> GetListAsync();
 
-        Task<T>? GetItemAsync(int id);
+        Task<T?> GetItemAsync(int id);
 
         Task<T> CreateAsync(T item); // создание объекта
 

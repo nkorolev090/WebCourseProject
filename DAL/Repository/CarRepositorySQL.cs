@@ -24,13 +24,13 @@ namespace DAL.Repository
 
         public async void DeleteAsync(int id)
         {
-            Car car = await db.Cars.FindAsync(id);
+            Car? car = await db.Cars.FindAsync(id);
             if (car != null)
                 db.Cars.Remove(car);
         }
 
 
-        public async Task<Car>? GetItemAsync(int id)
+        public async Task<Car?> GetItemAsync(int id)
         {
             return await db.Cars.FindAsync(id);
         }

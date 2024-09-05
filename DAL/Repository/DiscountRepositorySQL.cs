@@ -24,7 +24,7 @@ namespace DAL.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<Discount>? GetItemAsync(int id)
+        public async Task<Discount?> GetItemAsync(int id)
         {
             return await db.Discounts.FindAsync(id);
         }

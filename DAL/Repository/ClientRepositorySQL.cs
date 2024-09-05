@@ -32,7 +32,7 @@ namespace DAL.Repository
             }
         }
 
-        public async Task<Client>? GetItemAsync(int id)
+        public async Task<Client?> GetItemAsync(int id)
         {
             return await db.Clients.FindAsync(id);
         }

@@ -4,6 +4,7 @@ using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(ModelAutoService))]
-    partial class ModelAutoServiceModelSnapshot : ModelSnapshot
+    [Migration("20240904073211_LoyaltyEvent")]
+    partial class LoyaltyEvent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,62 +109,6 @@ namespace DAL.Migrations
                     b.ToTable("Car", (string)null);
                 });
 
-            modelBuilder.Entity("DomainModel.Cart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int")
-                        .HasColumnName("client_id");
-
-                    b.Property<int?>("PromocodeId")
-                        .HasColumnType("int")
-                        .HasColumnName("promocode_id");
-
-                    b.Property<double>("Total")
-                        .HasColumnType("float")
-                        .HasColumnName("total");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId")
-                        .IsUnique();
-
-                    b.HasIndex("PromocodeId");
-
-                    b.ToTable("Cart", (string)null);
-                });
-
-            modelBuilder.Entity("DomainModel.CartItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("CartId")
-                        .HasColumnType("int")
-                        .HasColumnName("slot_id");
-
-                    b.Property<int>("SlotId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("SlotId");
-
-                    b.ToTable("CartItem", (string)null);
-                });
-
             modelBuilder.Entity("DomainModel.Client", b =>
                 {
                     b.Property<int>("Id")
@@ -174,10 +121,6 @@ namespace DAL.Migrations
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("date")
                         .HasColumnName("birth_date");
-
-                    b.Property<int?>("CartId")
-                        .HasColumnType("int")
-                        .HasColumnName("cart_id");
 
                     b.Property<int>("DiscountId")
                         .HasColumnType("int")
@@ -294,29 +237,6 @@ namespace DAL.Migrations
                     b.HasIndex("MechanicId");
 
                     b.ToTable("Mechanic-Breakdown", (string)null);
-                });
-
-            modelBuilder.Entity("DomainModel.Promocode", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("DiscountValue")
-                        .HasColumnType("float")
-                        .HasColumnName("discountValue");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("title");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Promocode", (string)null);
                 });
 
             modelBuilder.Entity("DomainModel.Registration", b =>
@@ -667,46 +587,6 @@ namespace DAL.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("DomainModel.Cart", b =>
-                {
-                    b.HasOne("DomainModel.Client", "Client")
-                        .WithOne("Cart")
-                        .HasForeignKey("DomainModel.Cart", "ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Cart_Client");
-
-                    b.HasOne("DomainModel.Promocode", "Promocode")
-                        .WithMany("Carts")
-                        .HasForeignKey("PromocodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_Cart_Promocode");
-
-                    b.Navigation("Client");
-
-                    b.Navigation("Promocode");
-                });
-
-            modelBuilder.Entity("DomainModel.CartItem", b =>
-                {
-                    b.HasOne("DomainModel.Cart", "Cart")
-                        .WithMany("CartItems")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("FK_CartItem_Cart");
-
-                    b.HasOne("DomainModel.Slot", "Slot")
-                        .WithMany("CartItems")
-                        .HasForeignKey("SlotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_CartItem_Slot");
-
-                    b.Navigation("Cart");
-
-                    b.Navigation("Slot");
-                });
-
             modelBuilder.Entity("DomainModel.Client", b =>
                 {
                     b.HasOne("DomainModel.Discount", "Discount")
@@ -861,16 +741,9 @@ namespace DAL.Migrations
                     b.Navigation("Registrations");
                 });
 
-            modelBuilder.Entity("DomainModel.Cart", b =>
-                {
-                    b.Navigation("CartItems");
-                });
-
             modelBuilder.Entity("DomainModel.Client", b =>
                 {
                     b.Navigation("Cars");
-
-                    b.Navigation("Cart");
                 });
 
             modelBuilder.Entity("DomainModel.Discount", b =>
@@ -885,19 +758,9 @@ namespace DAL.Migrations
                     b.Navigation("Slots");
                 });
 
-            modelBuilder.Entity("DomainModel.Promocode", b =>
-                {
-                    b.Navigation("Carts");
-                });
-
             modelBuilder.Entity("DomainModel.Registration", b =>
                 {
                     b.Navigation("Slots");
-                });
-
-            modelBuilder.Entity("DomainModel.Slot", b =>
-                {
-                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("DomainModel.Status", b =>
