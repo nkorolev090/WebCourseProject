@@ -1,4 +1,5 @@
 ﻿using DomainModel;
+using Interfaces.Services;
 
 namespace Interfaces.DTO
 {

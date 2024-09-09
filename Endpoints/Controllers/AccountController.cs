@@ -1,9 +1,7 @@
 ﻿using Interfaces.Services;
 using Interfaces.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Interfaces.DTO;
 
 namespace Endpoints.Controllers
 {
@@ -12,6 +10,7 @@ namespace Endpoints.Controllers
     {
         private readonly ILogger _logger;
         private readonly IUserService _userService;
+
         public AccountController(ILogger<AccountController> logger, IUserService userService)
         {
             _logger = logger;
@@ -30,17 +29,13 @@ namespace Endpoints.Controllers
                     // Добавление нового пользователя
                     var result = await _userService.RegisterUserAsync(model.Name, model.Midname, model.Surname, model.PhoneNumber, model.Email, model.Password);
 
-                    if (result.Succeeded)
+                    if (result.User != null && result.Token != string.Empty)
                     {
                         var userRole = await _userService.GetUserRole(model.Email);
-                        return Ok(new { message = "Добавлен новый пользователь: ", email = model.Email, userRole });
+                        return Ok(new { message = "Добавлен новый пользователь: ", user = result.User, userRole, token = result.Token });
                     }
                     else
                     {
-                        foreach (var error in result.Errors)
-                        {
-                            ModelState.AddModelError(string.Empty, error.Description);
-                        }
                         var errorMsg = new
                         {
                             message = "Пользователь не добавлен",
@@ -69,7 +64,7 @@ namespace Endpoints.Controllers
 
         [HttpPost]
         [Route("api/account/login")]
-        //[AllowAnonymous]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             try
@@ -77,10 +72,10 @@ namespace Endpoints.Controllers
                 if (ModelState.IsValid)
                 {
                     var result = await _userService.SignInUserAsync(model.Email, model.Password, model.RememberMe);
-                    if (result.Succeeded)
+                    if (result.User != null && result.Token != string.Empty)
                     {
                         var userRole = await _userService.GetUserRole(model.Email);
-                        return Ok(new { message = "Выполнен вход", email = model.Email, userRole });
+                        return Ok(new { message = "Вход выполнен: ", user = result.User, userRole, token = result.Token });
                     }
                     else
                     {
@@ -111,26 +106,13 @@ namespace Endpoints.Controllers
             }
         }
 
+        [Obsolete("this method is deprecated")]
         [HttpPost]
         [Route("api/account/logoff")]
         public async Task<IActionResult> LogOff()
         {
-            try
-            {
-                var result = await _userService.LogOffAsync(HttpContext.User);
-                if (!result)
-                {
-                    return Unauthorized(new { message = "Сначала выполните вход" });
-                }
-
-                return Ok(new { message = "Выполнен выход" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message,
-                    DateTime.UtcNow.ToLongTimeString());
-                return Problem();
-            }
+            // Для JWT аутентификации выход не требуется, так как клиент просто должен удалить токен
+            return Ok(new { message = "Выполнен выход" });
         }
 
         [HttpGet]

@@ -17,7 +17,7 @@ namespace DAL.Repository
         {
             _db.Carts.Add(item);
             await _db.SaveChangesAsync();
-            return await _db.Carts.LastAsync();
+            return await _db.Carts.OrderBy(c => c.Id).LastOrDefaultAsync();
         }
 
         public void DeleteAsync(int id)

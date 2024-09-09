@@ -4,24 +4,30 @@ using Microsoft.AspNetCore.Identity;
 using DomainModel;
 using System.Security.Claims;
 using Interfaces.DTO;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Interfaces.Models;
 
 namespace BLL.Services
 {
     public class UserService : IUserService
     {
-        private readonly IDbRepository db;
+        private readonly IDbRepository _db;
         private readonly IClientService _clientService;
         private readonly IMechanicService _mechanicService;
         private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly IConfiguration _configuration;
 
-        public UserService(IDbRepository db, UserManager<User> userManager, SignInManager<User> signInManager, IClientService clientService, IMechanicService mechanicService) 
+        public UserService(IDbRepository db, UserManager<User> userManager, IClientService clientService, IMechanicService mechanicService, IConfiguration configuration) 
         {
-            this.db = db; 
-            this._userManager = userManager;
-            this._signInManager = signInManager;
-            this._clientService = clientService;
-            this._mechanicService = mechanicService;
+            _db = db; 
+            _userManager = userManager;
+            _clientService = clientService;
+            _mechanicService = mechanicService;
+            _configuration = configuration;
         }
 
         public async Task<string?> GetUserRole(string currUserEmail)
@@ -39,72 +45,109 @@ namespace BLL.Services
             {
                 return null;
             }
-            UserDTO user = new UserDTO
-            {
-                id = usr.Id,
-                isClient = usr.ClientId == null ? false : true,
-                Client = usr.ClientId == null ? null : await _clientService.GetClientDTOAsync((int)(usr.ClientId)),
-                Mechanic = usr.MechanicId == null ? null : await _mechanicService.GetMechanicAsync((int)(usr.MechanicId)),
-                userName = usr.UserName,
-                email = usr.Email,
-                phoneNumber = usr.PhoneNumber,
-            };
+            UserDTO user = await toUserDto(usr);
             return user;
         }
 
-        public async Task<bool> LogOffAsync(ClaimsPrincipal currUser)
-        {
-            User usr = await GetCurrentUserAsync(currUser);
-            if (usr == null)
-            {
-                return false;
-            }
-            // Удаление куки
-            await _signInManager.SignOutAsync();
-            return true;
-        }
-
-        public async Task<IdentityResult> RegisterUserAsync(string? name, string? midname, string? surname, string? phoneNumber, string email, string password)
+        public async Task<AutorizationResponse> RegisterUserAsync(string? name, string? midname, string? surname, string? phoneNumber, string email, string password)
         {
             User user;
 
             Client client = new Client();
             client.DiscountId = 1;
-            client.Discount = await db.Discouts.GetItemAsync(1);
+            client.Discount = await _db.Discouts.GetItemAsync(1);
             client.DiscountPoints = 0;
 
-            Client cl = await db.Clients.CreateAsync(client);
+            Client cl = await _db.Clients.CreateAsync(client);
 
-            Cart cart = await db.Carts.CreateAsync(new() { ClientId = cl.Id, Client = cl });
+            Cart cart = await _db.Carts.CreateAsync(new() { ClientId = cl.Id, Client = cl });
             cl.CartId = cart.Id;
             cl.Cart = cart;
-            List<Task> tasks = new List<Task>();
-            var resultUpdateClient = db.SaveAsync();
-            tasks.Add(resultUpdateClient);
+            await _db.SaveAsync();
 
             user = new() {Name = name, Midname = midname, Surname = surname, PhoneNumber = phoneNumber, Email = email, UserName = email, ClientId = cl.Id };
             
-            var resultCreateUser = _userManager.CreateAsync(user, password);
-            tasks.Add(resultCreateUser);
-            await Task.WhenAll(tasks);
+            var resultCreateUser = await _userManager.CreateAsync(user, password);
 
-            if (resultCreateUser.Result.Succeeded)
+            if (resultCreateUser.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "client");
-                // Установка куки
-                await _signInManager.SignInAsync(user, false);
+                // Генерация токена
+                var token = await GenerateJwtToken(user);
+
+                return new AutorizationResponse
+                {
+                    Token = token,
+                    User = await toUserDto(user)
+                };
 
             }
 
-            return resultCreateUser.Result;
+            return new AutorizationResponse { ErrorMessage = "Неверный логин или пароль" };
         }
 
-        public async Task<SignInResult> SignInUserAsync(string email, string password, bool isPersistent)
+        public async Task<AutorizationResponse> SignInUserAsync(string email, string password, bool isPersistent)
         {
-            var result = await _signInManager.PasswordSignInAsync(email, password, isPersistent, false);
-            return result;
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user != null && await _userManager.CheckPasswordAsync(user, password))
+            {
+                var token = await GenerateJwtToken(user);
+                return new AutorizationResponse {
+                    Token = token,
+                    User = await toUserDto(user)
+                };
+            }
+            else
+            {
+                return new AutorizationResponse { ErrorMessage = "Неверный логин или пароль"};
+            }
         }
 
         private Task<User> GetCurrentUserAsync(ClaimsPrincipal currUser) => _userManager.GetUserAsync(currUser);
+
+        // Метод для генерации JWT токена
+        private async Task<string> GenerateJwtToken(User user)
+        {
+            // Объединяем имя, отчество и фамилию пользователя
+            var fullName = $"{user.Name} {user.Midname} {user.Surname}";
+            var roles = await _userManager.GetRolesAsync(user);
+            var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role)).ToList();
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id), // Используем user.Id как основной идентификатор
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Name, fullName),  // Добавляем имя пользователя в клеймы
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Email, user.Email)
+            }.Union(roleClaims);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(double.Parse(_configuration["Jwt:ExpiryMinutes"])),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<UserDTO> toUserDto(User user)
+        {
+            return new UserDTO
+            {
+                id = user.Id,
+                isClient = user.ClientId == null ? false : true,
+                Client = user.ClientId == null ? null : await _clientService.GetClientDTOAsync((int)(user.ClientId)),
+                Mechanic = user.MechanicId == null ? null : await _mechanicService.GetMechanicAsync((int)(user.MechanicId)),
+                userName = user.UserName,
+                email = user.Email,
+                phoneNumber = user.PhoneNumber,
+            };
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Interfaces.DTO;
 using Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -20,6 +21,7 @@ namespace Endpoints.Controllers
         }
         // GET: api/<CarsController>
         [HttpGet]
+        [Authorize(Roles = "client")]
         public async Task<ActionResult<IEnumerable<CarDTO>>> Get()
         {
             try
