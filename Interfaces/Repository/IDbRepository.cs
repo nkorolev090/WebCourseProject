@@ -1,9 +1,4 @@
 ﻿using DomainModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Interfaces.Repository
 {
@@ -19,6 +14,9 @@ namespace Interfaces.Repository
         IRepository<Status> Statuses { get; }
         IRepository<Discount> Discouts {  get; }
         IRepository<LoyaltyEvent> LoyaltyEvents { get; }
+        IRepository<Cart> Carts { get; }
+        IRepository<CartItem> CartItems { get; }
+        IRepository<Promocode> Promocodes { get; }
         Task<int> SaveAsync();
     }
 }

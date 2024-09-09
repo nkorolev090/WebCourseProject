@@ -11,7 +11,7 @@ public partial class Breakdown
 
     public string? Info { get; set; }
 
-    public int Price { get; set; }
+    public double Price { get; set; }
 
     public int Warranty { get; set; }
 

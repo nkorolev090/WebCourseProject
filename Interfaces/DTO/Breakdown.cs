@@ -16,7 +16,7 @@ namespace Interfaces.DTO
 
         public string? info { get; set; }
 
-        public int price { get; set; }
+        public double price { get; set; }
 
         public int warranty { get; set; }
 

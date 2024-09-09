@@ -27,7 +27,7 @@ namespace Interfaces.DTO
         public string? status_name { get; set; }
 
         public int? client_id {  get; set; }
-        public int? reg_price { get; set; }
+        public double? reg_price { get; set; }
 
         public RegistrationDTO(Registration registration) {
             id = registration.Id;

@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DomainModel;
-using DAL;
+﻿using DomainModel;
 using Interfaces.Repository;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace DAL.Repository
 {
@@ -24,6 +16,9 @@ namespace DAL.Repository
         private StatusRepositorySQL statusRepository;
         private DiscountRepositorySQL discountRepository;
         private LoyaltyEventRepositorySQL loyaltyEventRepository;
+        private CartRepositorySQL cartRepository;
+        private CartItemRepositorySQL cartItemRepository;
+        private PromocodeRepositorySQL promocodeRepository;
 
         public DbRepositorySQL(ModelAutoService db) {
             this.db = db;
@@ -146,6 +141,41 @@ namespace DAL.Repository
                     loyaltyEventRepository = new LoyaltyEventRepositorySQL(db);
                 }
                 return loyaltyEventRepository;
+            }
+        }
+        public IRepository<Cart> Carts
+        {
+            get
+            {
+                if (cartRepository == null)
+                {
+                    cartRepository = new CartRepositorySQL(db);
+                }
+                return cartRepository;
+            }
+        }
+
+        public IRepository<CartItem> CartItems
+        {
+            get
+            {
+                if (cartItemRepository == null)
+                {
+                    cartItemRepository = new CartItemRepositorySQL(db);
+                }
+                return cartItemRepository;
+            }
+        }
+
+        public IRepository<Promocode> Promocodes
+        {
+            get
+            {
+                if (promocodeRepository == null)
+                {
+                    promocodeRepository = new PromocodeRepositorySQL(db);
+                }
+                return promocodeRepository;
             }
         }
 

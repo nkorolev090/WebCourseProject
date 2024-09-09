@@ -71,7 +71,6 @@ namespace DAL
                 entity.ToTable("Cart");
 
                 entity.Property(e => e.Id).HasColumnName("id");
-                entity.Property(e => e.Total).HasColumnName("total");
                 entity.Property(e => e.PromocodeId).HasColumnName("promocode_id");
                 entity.Property(e => e.ClientId).HasColumnName("client_id");
                 entity.HasOne(e => e.Promocode).WithMany(e => e.Carts).HasForeignKey(e => e.PromocodeId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_Cart_Promocode");

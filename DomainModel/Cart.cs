@@ -9,7 +9,6 @@ namespace DomainModel
     public class Cart
     {
         public int Id { get; set; }
-        public double Total { get; set; }
         public int? PromocodeId { get; set; }
         public virtual Promocode? Promocode { get; set; } = null;
         public int ClientId { get; set; }

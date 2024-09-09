@@ -14,9 +14,9 @@ public partial class Client
 
     public DateTime? BirthDate { get; set; } = null!;
 
-    public int? CartId { get; set; }
+    public int? CartId { get; set; } = null;
 
-    public virtual Cart? Cart { get; set; } = null;
+    public virtual Cart Cart { get; set; } = null!;
 
     public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
 

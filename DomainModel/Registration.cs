@@ -14,7 +14,7 @@ public partial class Registration
 
     public int Status { get; set; }
     
-    public int? RegPrice { get; set; }
+    public double? RegPrice { get; set; }
 
     public DateTime? RegDate { get; set; }
 

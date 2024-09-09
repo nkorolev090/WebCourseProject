@@ -14,6 +14,7 @@ namespace BLL.Services
         private readonly IMechanicService _mechanicService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+
         public UserService(IDbRepository db, UserManager<User> userManager, SignInManager<User> signInManager, IClientService clientService, IMechanicService mechanicService) 
         {
             this.db = db; 
@@ -73,11 +74,21 @@ namespace BLL.Services
             client.DiscountPoints = 0;
 
             Client cl = await db.Clients.CreateAsync(client);
+
+            Cart cart = await db.Carts.CreateAsync(new() { ClientId = cl.Id, Client = cl });
+            cl.CartId = cart.Id;
+            cl.Cart = cart;
+            List<Task> tasks = new List<Task>();
+            var resultUpdateClient = db.SaveAsync();
+            tasks.Add(resultUpdateClient);
+
             user = new() {Name = name, Midname = midname, Surname = surname, PhoneNumber = phoneNumber, Email = email, UserName = email, ClientId = cl.Id };
             
-            var result = await _userManager.CreateAsync(user, password);
+            var resultCreateUser = _userManager.CreateAsync(user, password);
+            tasks.Add(resultCreateUser);
+            await Task.WhenAll(tasks);
 
-            if (result.Succeeded)
+            if (resultCreateUser.Result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "client");
                 // Установка куки
@@ -85,7 +96,7 @@ namespace BLL.Services
 
             }
 
-            return result;
+            return resultCreateUser.Result;
         }
 
         public async Task<SignInResult> SignInUserAsync(string email, string password, bool isPersistent)
