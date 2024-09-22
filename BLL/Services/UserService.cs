@@ -141,6 +141,9 @@ namespace BLL.Services
             return new UserDTO
             {
                 id = user.Id,
+                midname = user.Midname,
+                name = user.Name,
+                surname = user.Surname,
                 isClient = user.ClientId == null ? false : true,
                 Client = user.ClientId == null ? null : await _clientService.GetClientDTOAsync((int)(user.ClientId)),
                 Mechanic = user.MechanicId == null ? null : await _mechanicService.GetMechanicAsync((int)(user.MechanicId)),

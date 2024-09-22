@@ -127,7 +127,7 @@ namespace Endpoints.Controllers
                     return Unauthorized(new { message = "Вы Гость. Пожалуйста, выполните вход" });
                 }
                 var userRole = await _userService.GetUserRole(result.email);
-                return Ok(new { message = "Сессия активна", userDTO = result, userRole });
+                return Ok(new { message = "Сессия активна", user = result, userRole });
             }
             catch (Exception ex)
             {

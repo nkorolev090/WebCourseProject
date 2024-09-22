@@ -15,6 +15,8 @@ public partial class Breakdown
 
     public int Warranty { get; set; }
 
+    public string? ImageUrl { get; set; }
+
     public virtual ICollection<MechanicBreakdown> MechanicBreakdowns { get; set; } = new List<MechanicBreakdown>();
 
     public virtual ICollection<Slot> Slots { get; set; } = new List<Slot>();

@@ -20,6 +20,8 @@ namespace Interfaces.DTO
 
         public int warranty { get; set; }
 
+        public string? image_url { get; set; }
+
         public BreakdownDTO( Breakdown b) 
         {
             id = b.Id;
@@ -27,6 +29,7 @@ namespace Interfaces.DTO
             info = b.Info;
             price = b.Price;
             warranty = b.Warranty;
+            image_url = b.ImageUrl;
         }
     }
 }

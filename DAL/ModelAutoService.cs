@@ -123,6 +123,7 @@ namespace DAL
                     .IsUnicode(false)
                     .HasColumnName("title");
                 entity.Property(e => e.Warranty).HasColumnName("warranty");
+                entity.Property(e => e.ImageUrl).HasColumnName("image_url");
             });
 
             modelBuilder.Entity<Car>(entity =>

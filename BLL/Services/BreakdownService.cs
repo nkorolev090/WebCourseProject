@@ -2,11 +2,6 @@
 using Interfaces.DTO;
 using Interfaces.Repository;
 using Interfaces.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BLL.Services
 {
@@ -24,6 +19,11 @@ namespace BLL.Services
         {
             List<Breakdown> breakdowns = await db.Breakdowns.GetListAsync();
             return breakdowns.Select(i => new BreakdownDTO(i)).ToList();
+        }
+        public async Task<List<BreakdownDTO>> GetBreakdownsByQueryAsync(string query)
+        {
+            List<Breakdown> breakdowns = await db.Breakdowns.GetListAsync();
+            return breakdowns.Where(b => b.Title.Contains(query)).Select(i => new BreakdownDTO(i)).ToList();
         }
     }
 }

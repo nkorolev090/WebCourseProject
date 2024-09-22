@@ -35,5 +35,22 @@ namespace Endpoints.Controllers
             }
 
         }
+
+        // GET: api/<BreakdownsController>
+        [HttpGet("byQuery")]
+        public async Task<ActionResult<IEnumerable<BreakdownDTO>>> GetByQuery(string query)
+        {
+            try
+            {
+                return await breakdownService.GetBreakdownsByQueryAsync(query);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
+
+        }
     }
 }
