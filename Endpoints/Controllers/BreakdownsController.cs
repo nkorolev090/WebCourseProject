@@ -20,7 +20,7 @@ namespace Endpoints.Controllers
         }
 
         // GET: api/<BreakdownsController>
-        [HttpGet]
+        [HttpGet("everything")]
         public async Task<ActionResult<IEnumerable<BreakdownDTO>>> Get()
         {
             try
