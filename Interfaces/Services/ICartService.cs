@@ -7,7 +7,7 @@ namespace Interfaces.Services
     {
         Task<CartDTO?> GetUserCartDTO(ClaimsPrincipal claimsPrincipal);
 
-        Task<bool> AddCartItem(ClaimsPrincipal claimsPrincipal, CartItemDTO cartItem);
+        Task<bool> AddCartItem(ClaimsPrincipal claimsPrincipal, SlotDTO slotDto);
 
         Task<bool> RemoveCartItem(ClaimsPrincipal claimsPrincipal, CartItemDTO cartItem);
 

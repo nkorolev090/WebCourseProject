@@ -35,7 +35,7 @@ namespace Interfaces.DTO
             return itemDto;
         }
 
-        public static CartItem ToCartItemDto(this CartItemDTO cartItem, Slot slot)
+        public static CartItem ToCartItem(this CartItemDTO cartItem, Slot slot)
         {
             var itemDto = new CartItem()
             {

@@ -19,9 +19,9 @@ namespace Endpoints.Controllers
         }
 
         // GET: api/<CartController>
-        [HttpGet]
+        [HttpGet(nameof(GetCart))]
         [Authorize(Roles = "client")]
-        public async Task<ActionResult<CartDTO?>> Get()
+        public async Task<ActionResult<CartDTO?>> GetCart()
         {
             try
             {
@@ -38,11 +38,11 @@ namespace Endpoints.Controllers
         // PUT: api/<CartController>/AddCartItem
         [HttpPut(nameof(AddCartItem))]
         [Authorize(Roles = "client")]
-        public async Task<ActionResult<CartDTO?>> AddCartItem(CartItemDTO cartItem)
+        public async Task<ActionResult<CartDTO?>> AddCartItem(SlotDTO slotDTO)
         {
             try
             {
-                var result = await cartService.AddCartItem(HttpContext.User, cartItem);
+                var result = await cartService.AddCartItem(HttpContext.User, slotDTO);
                 if (result == true)
                 {
                     return NoContent();

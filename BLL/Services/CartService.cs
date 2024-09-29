@@ -22,15 +22,15 @@ namespace BLL.Services
             _userService = userService;
         }
 
-        public async Task<bool> AddCartItem(ClaimsPrincipal claimsPrincipal, CartItemDTO cartItem)
+        public async Task<bool> AddCartItem(ClaimsPrincipal claimsPrincipal, SlotDTO slotDto)
         {
             var cart = await getUserCart(claimsPrincipal);
             if(cart == null) return false;
 
-            var slot = await _db.Slots.GetItemAsync(cartItem.id);
+            var slot = await _db.Slots.GetItemAsync(slotDto.id);
             if (slot == null) return false;
 
-            cart.CartItems.Add(cartItem.ToCartItemDto(slot));
+            cart.CartItems.Add(new CartItem { Slot = slot, SlotId = slot.Id, Cart = cart, CartId = cart.Id });
             await _db.SaveAsync();
 
             return true;
