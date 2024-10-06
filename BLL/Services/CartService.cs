@@ -22,15 +22,26 @@ namespace BLL.Services
             _userService = userService;
         }
 
-        public async Task<bool> AddCartItem(ClaimsPrincipal claimsPrincipal, SlotDTO slotDto)
+        public async Task<bool> AddCartItem(ClaimsPrincipal claimsPrincipal, int slotId, int breakdownId)
         {
             var cart = await getUserCart(claimsPrincipal);
             if(cart == null) return false;
 
-            var slot = await _db.Slots.GetItemAsync(slotDto.id);
-            if (slot == null) return false;
+            var breakdown = await _db.Breakdowns.GetItemAsync(breakdownId);
+            var slot = await _db.Slots.GetItemAsync(slotId);
+            if (slot == null || breakdown == null) return false;
 
-            cart.CartItems.Add(new CartItem { Slot = slot, SlotId = slot.Id, Cart = cart, CartId = cart.Id });
+            slot.Breakdown = breakdown;
+            slot.BreakdownId = breakdown.Id;
+            _db.Slots.Update(slot);
+
+            var cartItem = new CartItem { Slot = slot, SlotId = slot.Id, Cart = cart, CartId = cart.Id };
+            var crcartItem = await _db.CartItems.CreateAsync(cartItem);
+            await _db.SaveAsync();
+
+            cart.CartItems.Add(crcartItem);
+            _db.Carts.Update(cart);
+
             await _db.SaveAsync();
 
             return true;
@@ -51,27 +62,33 @@ namespace BLL.Services
             return await _db.Carts.GetItemAsync((int)user.Client.cart_id);
         }
 
-        public async Task<bool> RemoveCartItem(ClaimsPrincipal claimsPrincipal, CartItemDTO cartItem)
+        public async Task<CartDTO?> RemoveCartItem(ClaimsPrincipal claimsPrincipal, int breakdownId)
         {
             var cart = await getUserCart(claimsPrincipal);
-            if (cart == null) return false;
+            if (cart == null) return null;
 
-            var slot = await _db.Slots.GetItemAsync(cartItem.id);
-            if (slot == null) return false;
+            var itemsToRemove = new List<CartItem>();
 
             foreach (CartItem item in cart.CartItems)
             {
-                if (item.Id == cartItem.id)
+                if (item.Slot.BreakdownId == breakdownId)
                 {
-                    cart.CartItems.Remove(item);
-
-                    await _db.SaveAsync();
-
-                    return true;
+                    item.Slot.BreakdownId = null;
+                    item.Slot.Breakdown = null;
+                    
+                    itemsToRemove.Add(item);
+                    _db.CartItems.DeleteAsync(item.Id);
                 }
             }
 
-            return false;
+            foreach(var item in itemsToRemove)
+            {
+                cart.CartItems.Remove(item);
+            }
+
+            await _db.SaveAsync();
+
+            return cart.ToCartDto();
         }
 
         public async Task<bool> SetPromocode(ClaimsPrincipal claimsPrincipal, string promocode)

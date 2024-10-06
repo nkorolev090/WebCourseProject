@@ -38,11 +38,11 @@ namespace Endpoints.Controllers
         // PUT: api/<CartController>/AddCartItem
         [HttpPut(nameof(AddCartItem))]
         [Authorize(Roles = "client")]
-        public async Task<ActionResult<CartDTO?>> AddCartItem(SlotDTO slotDTO)
+        public async Task<ActionResult<CartDTO?>> AddCartItem(int slotId, int breakdownId)
         {
             try
             {
-                var result = await cartService.AddCartItem(HttpContext.User, slotDTO);
+                var result = await cartService.AddCartItem(HttpContext.User, slotId, breakdownId);
                 if (result == true)
                 {
                     return NoContent();
@@ -60,16 +60,16 @@ namespace Endpoints.Controllers
         // PUT: api/<CartController>/RemoveCartItem
         [HttpPut(nameof(RemoveCartItem))]
         [Authorize(Roles = "client")]
-        public async Task<ActionResult<CartDTO?>> RemoveCartItem(CartItemDTO cartItem)
+        public async Task<ActionResult<CartDTO?>> RemoveCartItem(int breakdownId)
         {
             try
             {
-                var result = await cartService.RemoveCartItem(HttpContext.User, cartItem);
-                if (result == true)
+                var result = await cartService.RemoveCartItem(HttpContext.User, breakdownId);
+                if (result == null)
                 {
-                    return NoContent();
+                    return NotFound();
                 }
-                return NotFound();
+                return result;
             }
             catch (Exception ex)
             {

@@ -16,9 +16,13 @@ namespace DAL.Repository
             return await _db.CartItems.LastAsync();
         }
 
-        public void DeleteAsync(int id)
+        public async void DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            var item = await _db.CartItems.FindAsync(id);
+            if (item != null)
+            {
+                _db.CartItems.Remove(item);
+            }
         }
 
         public Task<CartItem?> GetItemAsync(int id)
