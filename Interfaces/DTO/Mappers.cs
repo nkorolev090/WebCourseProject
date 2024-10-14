@@ -9,10 +9,15 @@ namespace Interfaces.DTO
         {
             if (cart == null) return null;
 
+            var subtotal = cart.CartItems.sumSubTotal();
+            var discountValue = cart.Client.Discount.Sale / 100.0 * subtotal;
+
             var cartDto = new CartDTO() 
             {
                 id = cart.Id,
-                subtotal = cart.CartItems.sumSubTotal(),
+                subtotal = subtotal,
+                discount_value = discountValue,
+                total = subtotal - discountValue,
                 cart_items = cart.CartItems.Select(item => item.ToCartItemDto()).ToList(),
             };
 
@@ -50,7 +55,10 @@ namespace Interfaces.DTO
         private static double sumSubTotal( this ICollection<CartItem> cartItems)
         {
             var sum = 0.0;
-            cartItems.Select(item => sum += item.Slot.Breakdown!.Price);
+            foreach(CartItem cartItem in cartItems)
+            {
+                sum += cartItem.Slot.Breakdown!.Price;
+            }
             return sum;
         }
     }

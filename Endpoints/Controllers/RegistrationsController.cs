@@ -27,7 +27,7 @@ namespace Endpoints.Controllers
             this.slotService = slotService;
         }
         // GET: api/<RegistrationsController>
-        [HttpGet]
+        [HttpGet("getRegistrations")]
         [Authorize(Roles = "client, mechanic")]
         public async Task<ActionResult<IEnumerable<RegistrationDTO>?>> GetRegistrations()
         {

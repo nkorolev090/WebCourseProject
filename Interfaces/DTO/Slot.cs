@@ -15,6 +15,7 @@ namespace Interfaces.DTO
         public int? breakdown_id { get; set; }
         public string? breakdown_name { get; set; } 
         public int? breakdown_warranty { get; set; }
+        public string? breakdown_url { get; set; }
         public double? cost {  get; set; }
 
         public int mechanic_id { get; set; }
@@ -39,6 +40,7 @@ namespace Interfaces.DTO
             {
                 this.breakdown_name = slot.Breakdown?.Title;
                 this.breakdown_warranty = slot.Breakdown?.Warranty;
+                this.breakdown_url = slot.Breakdown?.ImageUrl;
                 this.cost = slot.Breakdown?.Price;
             }
             
