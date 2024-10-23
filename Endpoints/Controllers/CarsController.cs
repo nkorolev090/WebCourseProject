@@ -19,10 +19,11 @@ namespace Endpoints.Controllers
             _logger = logger;
             this.carService = carService;
         }
+
         // GET: api/<CarsController>
-        [HttpGet]
+        [HttpGet(nameof(GetCars))]
         [Authorize(Roles = "client")]
-        public async Task<ActionResult<IEnumerable<CarDTO>>> Get()
+        public async Task<ActionResult<IEnumerable<CarDTO>>> GetCars()
         {
             try
             {
