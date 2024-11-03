@@ -12,5 +12,7 @@ namespace Interfaces.Services
         Task<CartDTO?> RemoveCartItem(ClaimsPrincipal claimsPrincipal, int breakdownId);
 
         Task<bool> SetPromocode(ClaimsPrincipal claimsPrincipal, string promocode);
+
+        Task<Boolean> ClearCart(ClaimsPrincipal claimsPrincipal);
     }
 }

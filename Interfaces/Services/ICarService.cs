@@ -11,7 +11,8 @@ namespace Interfaces.Services
     public interface ICarService
     {
         Task<List<CarDTO>> GetAllCarDTOAsync();
-        Task<List<CarDTO>> GetAllClientCarDTOAsync(ClaimsPrincipal currUser);
+        Task<List<CarDTO>?> GetAllClientCarDTOAsync(ClaimsPrincipal currUser);
+        Task<CarDTO?> GetDefaultCarAsync(ClaimsPrincipal currUser);
         void CreateCarDTOAsync(CarDTO p);
         void UpdateCarDTOAsync(CarDTO p);
         Task<CarDTO> GetCarDTOAsync(int id);

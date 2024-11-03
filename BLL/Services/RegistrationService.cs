@@ -11,34 +11,72 @@ namespace BLL.Services
     {
         private readonly IDbRepository db;
         private readonly IUserService userService;
-        private readonly ISlotService slotService;
-        public RegistrationService(IDbRepository db, IUserService userService, ISlotService slotService) 
+        private readonly ICartService cartService;
+        public RegistrationService(IDbRepository db, IUserService userService, ICartService cartService) 
         { 
             this.db = db;
             this.userService = userService;
-            this.slotService = slotService;
+            this.cartService = cartService;
         }
-        public async Task<RegistrationDTO> CreateRegistrationAsync(RegistrationViewModel registration)//Метод создания записи
+        public async Task<RegistrationDTO?> CreateRegistrationAsync(RegistrationViewModel registration, ClaimsPrincipal currUser)//Метод создания записи
         {
+
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+            var client = await db.Clients.GetItemAsync(user!.Client!.id);
+            if (user == null || client == null)
+            {
+                return null;
+            }
+
             Registration reg = new Registration();
             reg.CarId = registration.Registration.car_id;
-            reg.RegPrice = registration.Registration.reg_price;
+
+            var price = await sumSubTotal(registration.Slots);
+            price *= 1.0 - client.Discount.Sale / 100.0;
+            reg.RegPrice = price;
+
             reg.Info = registration.Registration.info;
-            reg.RegDate = DateTime.Parse(registration.Registration.reg_date);
-            reg.Status = registration.Registration.status;
+            reg.RegDate = DateTime.Now;
+            reg.Status = 1; //на обработке
             reg.Car = await db.Cars.GetItemAsync(registration.Registration.car_id);
-            reg.StatusNavigation = await db.Statuses.GetItemAsync(registration.Registration.status);
+            reg.StatusNavigation = await db.Statuses.GetItemAsync(1);
             Registration registration1 = await db.Registrations.CreateAsync(reg);
+
+            await db.SaveAsync();
 
             foreach(SlotDTO slot in registration.Slots)
             {
-                slot.registration_id = registration1.Id;
-                await slotService.UpdateSlotAsync(slot);
+                var s = await db.Slots.GetItemAsync(slot.id);
+                if(s == null)
+                {
+                    return null;
+                }
+                s.RegistrationId = registration1.Id;
+                s.Registration = registration1;
             }
+
+            await db.SaveAsync();
+
+            await cartService.ClearCart(currUser);
 
             return new RegistrationDTO(registration1);
             
         }
+
+        private async Task<double> sumSubTotal(ICollection<SlotDTO> slotItems)
+        {
+            var sum = 0.0;
+            foreach (SlotDTO slotDTO in slotItems)
+            {
+                var slot = await db.Slots.GetItemAsync(slotDTO.id);
+                if(slot != null)
+                {
+                    sum += slot.Breakdown!.Price;
+                }
+            }
+            return sum;
+        }
+
         public async Task<RegistrationDTO> GetItemAsync(int id)//Метод возвращающий запись по id
         {
             Registration registration = await db.Registrations.GetItemAsync(id);
@@ -119,8 +157,8 @@ namespace BLL.Services
             reg.Car = await db.Cars.GetItemAsync(registration.car_id);
             List<Slot> _slots = await db.Slots.GetListAsync();
             reg.Slots = _slots.Where(i => i.RegistrationId == registration.id).ToList();
-            reg.Status = registration.status;            
-            reg.StatusNavigation = await db.Statuses.GetItemAsync(registration.status);
+            reg.Status = (int)registration.status;            
+            reg.StatusNavigation = await db.Statuses.GetItemAsync(reg.Status);
             return await db.SaveAsync();
 
         }

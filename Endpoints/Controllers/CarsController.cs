@@ -36,5 +36,28 @@ namespace Endpoints.Controllers
                 return Problem();
             }
         }
+
+        // GET: api/<CarsController>
+        [HttpGet(nameof(GetDefaultCar))]
+        [Authorize(Roles = "client")]
+        public async Task<ActionResult<CarDTO?>> GetDefaultCar()
+        {
+            try
+            {
+                var car = await carService.GetDefaultCarAsync(HttpContext.User);
+                //if(car == null)
+                //{
+                //    return Problem();
+                //}
+                 
+                return car;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
+        }
     }
 }

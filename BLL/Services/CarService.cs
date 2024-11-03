@@ -54,6 +54,27 @@ namespace BLL.Services
             return new CarDTO(car);
         }
 
+        public async Task<CarDTO?> GetDefaultCarAsync(ClaimsPrincipal currUser)
+        {
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+
+            if (user?.Client != null)
+            {
+                List<Car> cars = await db.Cars.GetListAsync();
+                var defaultCar = cars.FirstOrDefault(i => i.OwnerId == user?.Client.id);
+                if(defaultCar == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return new CarDTO(defaultCar);
+                }
+            }
+
+            return null;
+        }
+
         public async void UpdateCarDTOAsync(CarDTO p)
         {
             Car car =  await db.Cars.GetItemAsync(p.id);

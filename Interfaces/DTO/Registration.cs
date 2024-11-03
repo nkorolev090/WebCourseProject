@@ -1,12 +1,4 @@
 ﻿using DomainModel;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Interfaces.DTO
 {
@@ -22,7 +14,7 @@ namespace Interfaces.DTO
 
         public string? info { get; set; }
 
-        public int status { get; set; }
+        public int? status { get; set; }
 
         public string? status_name { get; set; }
 

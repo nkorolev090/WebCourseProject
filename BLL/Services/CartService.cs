@@ -91,6 +91,23 @@ namespace BLL.Services
             return cart.ToCartDto();
         }
 
+        public async Task<Boolean> ClearCart(ClaimsPrincipal claimsPrincipal)
+        {
+            var cart = await getUserCart(claimsPrincipal);
+            if (cart == null) return false;
+
+            foreach(var item in cart.CartItems)
+            {
+                _db.CartItems.DeleteAsync(item.Id);
+            }
+
+            cart.CartItems.Clear();
+
+            await _db.SaveAsync();
+
+            return true;
+        }
+
         public async Task<bool> SetPromocode(ClaimsPrincipal claimsPrincipal, string promocode)
         {
             var cart = await getUserCart(claimsPrincipal);

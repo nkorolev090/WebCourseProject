@@ -6,11 +6,11 @@ namespace Interfaces.Models
     public class RegistrationViewModel
     {
         [Required]
-        [Display(Name = "Registration")]
+        [Display(Name = "registration")]
         public RegistrationDTO Registration { get; set; }
 
         [Required]
-        [Display(Name = "Slots")]
+        [Display(Name = "slots")]
         public List<SlotDTO> Slots { get; set; }
     }
 }

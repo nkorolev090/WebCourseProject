@@ -128,11 +128,11 @@ namespace BLL.Services
         public async Task UpdateSlotAsync(SlotDTO slot)
         {
             Slot s = await db.Slots.GetItemAsync(slot.id);
-            s.StartTime = TimeSpan.Parse(slot.start_time);
-            s.StartDate = DateTime.Parse(slot.start_date);
+            //s.StartTime = TimeSpan.Parse(slot.start_time);
+            //s.StartDate = DateTime.Parse(slot.start_date);
             s.FinishDate = DateTime.Parse(slot.finish_date);
             s.FinishTime = TimeSpan.Parse(slot.finish_time);
-            s.MechanicId = slot.mechanic_id;
+            //s.MechanicId = slot.mechanic_id;
             s.BreakdownId = slot.breakdown_id;
             s.Mechanic = await db.Mechanics.GetItemAsync(slot.mechanic_id);
             if(slot.breakdown_id != null) { 

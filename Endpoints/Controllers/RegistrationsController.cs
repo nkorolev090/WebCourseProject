@@ -29,11 +29,18 @@ namespace Endpoints.Controllers
         // GET: api/<RegistrationsController>
         [HttpGet("getRegistrations")]
         [Authorize(Roles = "client, mechanic")]
-        public async Task<ActionResult<IEnumerable<RegistrationDTO>?>> GetRegistrations()
+        public async Task<ActionResult<IEnumerable<RegistrationViewModel>?>> GetRegistrations()
         {
             try
             {
-                var response = await registrationService.GetRegistrationsAsync(HttpContext.User);
+                var registrationDTOs = await registrationService.GetRegistrationsAsync(HttpContext.User);
+
+                List<RegistrationViewModel> response = new List<RegistrationViewModel>();
+                foreach (RegistrationDTO registration in registrationDTOs)
+                {
+                    var slots = await slotService.GetRegistrationSlotsAsync(registration.id);
+                    response.Add(new() { Registration = registration, Slots = slots});
+                }
                 return response;
             }
             catch (Exception ex)
@@ -69,8 +76,7 @@ namespace Endpoints.Controllers
         }
 
         // POST api/<RegistrationsController>
-        [HttpPost]
-        [ActionName(nameof(PostRegistration))]
+        [HttpPost(nameof(PostRegistration))]
         [Authorize(Roles = "client")]
         public async Task<ActionResult<RegistrationDTO>> PostRegistration(RegistrationViewModel registration)
         {
@@ -80,9 +86,13 @@ namespace Endpoints.Controllers
                 {
                     return BadRequest(ModelState);
                 }
-                RegistrationDTO _reg = await registrationService.CreateRegistrationAsync(registration);
+                RegistrationDTO? reg = await registrationService.CreateRegistrationAsync(registration, HttpContext.User);
+                if(reg == null)
+                {
+                    return BadRequest(ModelState);
+                }
 
-                return CreatedAtAction("GetRegistration", new { id = _reg.id }, _reg);
+                return reg;
             }
             catch (Exception ex)
             {
