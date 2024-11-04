@@ -126,6 +126,23 @@ namespace Endpoints.Controllers
             return NoContent();
         }
 
+        // PUT api/<RegistrationsController>/5
+        [HttpPut(nameof(CloseRegistration))]
+        [Authorize(Roles = "client, mechanic")]
+        public async Task<ActionResult<int>> CloseRegistration(int id)
+        {
+
+            try
+            {
+                return await registrationService.CloseRegistrationAsync(id, HttpContext.User);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+
+                return NotFound();
+            }
+        }
+
         // DELETE api/<RegistrationsController>/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "client, mechanic")]

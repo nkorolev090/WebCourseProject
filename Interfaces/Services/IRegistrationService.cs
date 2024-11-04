@@ -14,5 +14,6 @@ namespace Interfaces.Services
         Task<RegistrationDTO?> CreateRegistrationAsync(RegistrationViewModel registration, ClaimsPrincipal currUser);
         Task<int> UpdateRegistrationAsync(RegistrationDTO registration);
         Task<bool> DeleteRegistrationAsync(int registration_id);
+        Task<int> CloseRegistrationAsync(int registrationId, ClaimsPrincipal currUser);
     }
 }

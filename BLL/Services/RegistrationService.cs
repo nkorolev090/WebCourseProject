@@ -163,6 +163,36 @@ namespace BLL.Services
 
         }
 
+        public async Task<int> CloseRegistrationAsync(int registrationId, ClaimsPrincipal currUser)
+        {
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+
+                Registration? registration = await db.Registrations.GetItemAsync(registrationId);
+
+            if (registration == null) return 1;
+
+            if (user?.Client == null) return 2;
+
+            if (registration.Car.Owner.Id == user.Client.id)
+            {
+                List<Slot> _regSlots = await db.Slots.GetListAsync();
+                List<Slot> regSlots = _regSlots.Where(i => i.RegistrationId == registration.Id).ToList();
+                foreach (Slot regSlot in regSlots)
+                {
+                    regSlot.RegistrationId = null;
+                    regSlot.Registration = null;
+                    regSlot.BreakdownId = null;
+                    regSlot.Breakdown = null;
+                }
+
+                registration.Status = 3;
+                registration.StatusNavigation = await db.Statuses.GetItemAsync(3);
+
+                return await db.SaveAsync();
+            }
+            return 3;
+        }
+
         public async Task<bool> DeleteRegistrationAsync(int registration_id)//Метод удаления записи
         {
             Registration registration = await db.Registrations.GetItemAsync(registration_id);
