@@ -17,5 +17,7 @@ namespace DomainModel
         public virtual Client? Client { get; set; }
 
         public virtual Mechanic? Mechanic { get; set; }
+
+        public virtual ICollection<DeviceToken> DeviceTokens { get; set; } = new List<DeviceToken>();
     }
 }

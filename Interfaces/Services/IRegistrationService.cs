@@ -8,7 +8,7 @@ namespace Interfaces.Services
     public interface IRegistrationService
     {
         Task<RegistrationDTO> GetItemAsync(int id);
-        Task<List<RegistrationDTO>> GetRegistrationsAsync(ClaimsPrincipal currUser);
+        Task<List<RegistrationDTO>?> GetRegistrationsAsync(ClaimsPrincipal currUser);
         Task<List<StatusDTO>> GetStatusesAsync();
         Task<StatusDTO> GetStatusAsync(int id);
         Task<RegistrationDTO?> CreateRegistrationAsync(RegistrationViewModel registration, ClaimsPrincipal currUser);

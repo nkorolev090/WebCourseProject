@@ -19,6 +19,7 @@ namespace DAL.Repository
         private CartRepositorySQL cartRepository;
         private CartItemRepositorySQL cartItemRepository;
         private PromocodeRepositorySQL promocodeRepository;
+        private DeviceTokenRepositorySQL deviceTokenRepository;
 
         public DbRepositorySQL(ModelAutoService db) {
             this.db = db;
@@ -176,6 +177,18 @@ namespace DAL.Repository
                     promocodeRepository = new PromocodeRepositorySQL(db);
                 }
                 return promocodeRepository;
+            }
+        }
+
+        public IRepository<DeviceToken> DeviceTokens
+        {
+            get
+            {
+                if(deviceTokenRepository == null)
+                {
+                    deviceTokenRepository = new DeviceTokenRepositorySQL(db);
+                }
+                return deviceTokenRepository;
             }
         }
 

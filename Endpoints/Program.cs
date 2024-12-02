@@ -67,6 +67,8 @@ builder.Services.AddScoped<IMechanicService, MechanicService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILoyaltyEventService, LoyaltyEventService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IDeviceTokenService, DeviceTokenService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -17,6 +17,7 @@ namespace Interfaces.Repository
         IRepository<Cart> Carts { get; }
         IRepository<CartItem> CartItems { get; }
         IRepository<Promocode> Promocodes { get; }
+        IRepository<DeviceToken> DeviceTokens { get; }
         Task<int> SaveAsync();
     }
 }

@@ -35,6 +35,8 @@ namespace DAL
         public virtual DbSet<CartItem> CartItems { get; set; }
 
         public virtual DbSet<Cart> Carts { get; set; }
+
+        public virtual DbSet<DeviceToken> DeviceTokens { get; set; }
         #endregion
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -46,6 +48,16 @@ namespace DAL
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<DeviceToken>(entity =>
+            {
+                entity.ToTable("DeviceToken");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Token).HasColumnName("token");
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+                entity.HasOne(e => e.User).WithMany(t => t.DeviceTokens).HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_DeviceToken_User");
+            });
+            
             modelBuilder.Entity<Promocode>(entity =>
             {
                 entity.ToTable("Promocode");
