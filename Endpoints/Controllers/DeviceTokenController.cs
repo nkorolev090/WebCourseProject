@@ -23,7 +23,7 @@ namespace Endpoints.Controllers
 
         [HttpPost(nameof(SaveDeviceToken))]
         [Authorize(Roles = "client, mechanic")]
-        public async Task<ActionResult<DeviceTokenDTO>> SaveDeviceToken(string deviceToken)
+        public async Task<ActionResult<DeviceTokenDTO>> SaveDeviceToken([FromBody] string deviceToken)
         {
             try
             {

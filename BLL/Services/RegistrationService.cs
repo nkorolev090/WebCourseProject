@@ -12,11 +12,15 @@ namespace BLL.Services
         private readonly IDbRepository db;
         private readonly IUserService userService;
         private readonly ICartService cartService;
-        public RegistrationService(IDbRepository db, IUserService userService, ICartService cartService) 
+        private readonly INotificationService notificationService;
+        private readonly IDeviceTokenService deviceTokenService;
+        public RegistrationService(IDbRepository db, IUserService userService, ICartService cartService, INotificationService notificationService, IDeviceTokenService deviceTokenService) 
         { 
             this.db = db;
             this.userService = userService;
             this.cartService = cartService;
+            this.notificationService = notificationService;
+            this.deviceTokenService = deviceTokenService;
         }
         public async Task<RegistrationDTO?> CreateRegistrationAsync(RegistrationViewModel registration, ClaimsPrincipal currUser)//Метод создания записи
         {
@@ -137,7 +141,7 @@ namespace BLL.Services
             return regsRet;
         }
 
-        public async Task<int> UpdateRegistrationAsync(RegistrationDTO registration)//Метод обновления записи
+        public async Task<int> UpdateRegistrationAsync(RegistrationDTO registration, ClaimsPrincipal currUser)//Метод обновления записи
         {
             if(registration.status == 3)//если заявка отклонена то необходимо освободить слоты
             {
@@ -159,8 +163,29 @@ namespace BLL.Services
             reg.Slots = _slots.Where(i => i.RegistrationId == registration.id).ToList();
             reg.Status = (int)registration.status;            
             reg.StatusNavigation = await db.Statuses.GetItemAsync(reg.Status);
-            return await db.SaveAsync();
 
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+            if (user?.Mechanic!= null && reg.Status > 1 && reg.Status < 5)
+            {
+                var ownerUserId = reg?.Car?.Owner.Users.FirstOrDefault()?.Id;
+                if (ownerUserId == null) return 115;
+
+                var deviceTokens = await deviceTokenService.GetUsersDeviceTokensAsync(ownerUserId);
+                if (deviceTokens == null) return 33;
+
+                var notificationRoot = NotificationType.REG_STATUS_UPDATE.toNotificationRoot(reg);
+
+                List<Task> tasks = new List<Task>();
+                foreach (var deviceToken in deviceTokens)
+                {
+                    notificationRoot.message.token = deviceToken.token;
+                    tasks.Add(notificationService.SendNotification(notificationRoot));
+                }
+
+                await Task.WhenAll(tasks);
+            }
+
+            return await db.SaveAsync();
         }
 
         public async Task<int> CloseRegistrationAsync(int registrationId, ClaimsPrincipal currUser)
@@ -171,9 +196,7 @@ namespace BLL.Services
 
             if (registration == null) return 1;
 
-            if (user?.Client == null) return 2;
-
-            if (registration.Car.Owner.Id == user.Client.id)
+            if (registration.Car.Owner.Id == user?.Client?.id || user?.Mechanic != null)
             {
                 List<Slot> _regSlots = await db.Slots.GetListAsync();
                 List<Slot> regSlots = _regSlots.Where(i => i.RegistrationId == registration.Id).ToList();
@@ -189,6 +212,24 @@ namespace BLL.Services
                 registration.StatusNavigation = await db.Statuses.GetItemAsync(3);
 
                 return await db.SaveAsync();
+            }
+
+            if (user?.Mechanic != null)
+            {
+                var ownerUserId = registration.Car.Owner.Users.FirstOrDefault()?.Id;
+                if (ownerUserId == null) return 115;
+
+                var deviceTokens = await deviceTokenService.GetUsersDeviceTokensAsync(ownerUserId);
+                if (deviceTokens == null) return 33;
+
+                var notificationRoot = NotificationType.REG_STATUS_UPDATE.toNotificationRoot(registration);
+
+                List<Task> tasks = new List<Task>();
+                foreach (var deviceToken in deviceTokens)
+                {
+                    notificationRoot.message.token = deviceToken.token;
+                    tasks.Add(notificationService.SendNotification(notificationRoot));
+                }
             }
             return 3;
         }

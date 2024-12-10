@@ -25,6 +25,8 @@ namespace BLL.Services
             {
                 return null;
             }
+            var userTokens = await GetUsersDeviceTokensAsync(user.Id);
+            if (userTokens!.Any(token => token.token == deviceToken)) return null;
 
             var token = new DeviceToken
             {
@@ -37,17 +39,27 @@ namespace BLL.Services
             return new DeviceTokenDTO(tokenDto);
         }
 
-        public async Task<IEnumerable<DeviceTokenDTO>?> GetUsersDeviceTokensAsync(ClaimsPrincipal currUser)
+        public async Task<bool> DeleteDeviceTokenAsync(ClaimsPrincipal currUser, string deviceToken)
         {
             var user = await _userManager.GetUserAsync(currUser);
 
             if (user == null)
             {
-                return null;
+                return false;
             }
 
+            var userTokens = await GetUsersDeviceTokensAsync(user.Id);
+            var tokenForDelete = userTokens?.Where(token => token.token == deviceToken).FirstOrDefault();
+            if (tokenForDelete == null) return false;
+
+            _db.DeviceTokens.DeleteAsync(tokenForDelete.id);
+            return true;
+        }
+
+        public async Task<IEnumerable<DeviceTokenDTO>?> GetUsersDeviceTokensAsync(string userId)
+        {
             var tokens = await _db.DeviceTokens.GetListAsync();
-            return tokens.Where(t => t.UserId == user.Id).Select(t=> new DeviceTokenDTO(t));
+            return tokens.Where(t => t.UserId == userId).Select(t=> new DeviceTokenDTO(t));
         }
     }
 }

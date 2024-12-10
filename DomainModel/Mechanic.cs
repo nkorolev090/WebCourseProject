@@ -12,4 +12,6 @@ public partial class Mechanic
     public virtual ICollection<MechanicBreakdown> MechanicBreakdowns { get; set; } = new List<MechanicBreakdown>();
 
     public virtual ICollection<Slot> Slots { get; set; } = new List<Slot>();
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

@@ -21,4 +21,6 @@ public partial class Client
     public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
 
     public virtual Discount Discount { get; set; } = null!;
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

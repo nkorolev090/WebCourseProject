@@ -105,8 +105,8 @@ namespace DAL
             modelBuilder.Entity<User>(entity =>
             {
                 //entity.UseTpcMappingStrategy();
-                entity.HasOne(e => e.Mechanic).WithMany().HasForeignKey(e => e.MechanicId).OnDelete(DeleteBehavior.Cascade);
-                entity.HasOne(e => e.Client).WithMany().HasForeignKey(e => e.ClientId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Mechanic).WithMany(e=>e.Users).HasForeignKey(e => e.MechanicId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Client).WithMany(e => e.Users).HasForeignKey(e => e.ClientId).OnDelete(DeleteBehavior.Cascade);
                 entity.Property(e => e.Midname)
                     .HasMaxLength(50)
                     .IsUnicode(false)

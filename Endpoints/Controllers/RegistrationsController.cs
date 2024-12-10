@@ -115,7 +115,7 @@ namespace Endpoints.Controllers
 
             try
             {
-                await registrationService.UpdateRegistrationAsync(registration);
+                await registrationService.UpdateRegistrationAsync(registration, HttpContext.User);
             }
             catch (DbUpdateConcurrencyException)
             {

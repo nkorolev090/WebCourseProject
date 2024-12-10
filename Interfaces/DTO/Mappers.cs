@@ -1,10 +1,12 @@
 ﻿using DomainModel;
+using Interfaces.Models;
 using Interfaces.Services;
 
 namespace Interfaces.DTO
 {
     public static class Mappers
     {
+        #region CartMapper
         public static CartDTO? ToCartDto(this Cart? cart) 
         {
             if (cart == null) return null;
@@ -61,5 +63,46 @@ namespace Interfaces.DTO
             }
             return sum;
         }
-    }
+
+        #endregion
+
+        #region NotificationMapper
+
+        public static NotificationRoot toNotificationRoot(this NotificationType notificationType, Registration registration)
+        {
+            var notificationRoot = new NotificationRoot();
+            notificationRoot.message = new Message();
+            notificationRoot.message.notification = new Notification();
+
+            switch (notificationType)
+            {
+                case NotificationType.REG_STATUS_UPDATE:
+                    {
+                        notificationRoot.message.notification.title = $"Статус записи №{registration.Id} изменился";
+                        notificationRoot.message.notification.body = registration.Status switch
+                        {
+                            2 => "Ваша заявка одобрена",
+                            3 => "Ваша заявка отклонена",
+                            4 => "Ремонт завершен, можете забирать автомобиль",
+                            _ => throw new NotImplementedException(),
+                        };
+                    }
+                    break;
+
+                case NotificationType.REG_CLOSE:
+                    {
+
+                    }
+                    break;
+                default:
+                    {
+
+                    }
+                    break;
+            }
+            
+            return notificationRoot;
+        }
+    #endregion
+}
 }
