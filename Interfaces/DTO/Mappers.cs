@@ -72,14 +72,15 @@ namespace Interfaces.DTO
         {
             var notificationRoot = new NotificationRoot();
             notificationRoot.message = new Message();
-            notificationRoot.message.notification = new Notification();
+            notificationRoot.message.data = new Data();
+            //notificationRoot.message.notification = new Notification();
 
             switch (notificationType)
             {
                 case NotificationType.REG_STATUS_UPDATE:
                     {
-                        notificationRoot.message.notification.title = $"Статус записи №{registration.Id} изменился";
-                        notificationRoot.message.notification.body = registration.Status switch
+                        notificationRoot.message.data.title = $"Статус записи №{registration.Id} изменился";
+                        notificationRoot.message.data.body = registration.Status switch
                         {
                             2 => "Ваша заявка одобрена",
                             3 => "Ваша заявка отклонена",

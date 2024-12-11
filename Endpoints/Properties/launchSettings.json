@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://192.168.0.16:7130;http://192.168.0.16:5017"
+      "applicationUrl": "https://192.168.0.19:7130;http://192.168.0.19:5017"
     },
     "Endoints2": {
       "commandName": "Project",
