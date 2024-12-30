@@ -9,6 +9,8 @@ public partial class Mechanic
 
     public string FullName { get; set; }
 
+    public int StationId { get; set; }
+
     public virtual ICollection<MechanicBreakdown> MechanicBreakdowns { get; set; } = new List<MechanicBreakdown>();
 
     public virtual ICollection<Slot> Slots { get; set; } = new List<Slot>();

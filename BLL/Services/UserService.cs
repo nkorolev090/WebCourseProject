@@ -16,16 +16,14 @@ namespace BLL.Services
     public class UserService : IUserService
     {
         private readonly IDbRepository _db;
-        private readonly IClientService _clientService;
         private readonly IMechanicService _mechanicService;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
 
-        public UserService(IDbRepository db, UserManager<User> userManager, IClientService clientService, IMechanicService mechanicService, IConfiguration configuration) 
+        public UserService(IDbRepository db, UserManager<User> userManager, IMechanicService mechanicService, IConfiguration configuration) 
         {
             _db = db; 
             _userManager = userManager;
-            _clientService = clientService;
             _mechanicService = mechanicService;
             _configuration = configuration;
         }
@@ -138,6 +136,7 @@ namespace BLL.Services
 
         private async Task<UserDTO> toUserDto(User user)
         {
+            var client = user.ClientId == null ? null : await _db.Clients.GetItemAsync((int)user.ClientId);
             return new UserDTO
             {
                 id = user.Id,
@@ -145,7 +144,7 @@ namespace BLL.Services
                 name = user.Name,
                 surname = user.Surname,
                 isClient = user.ClientId == null ? false : true,
-                Client = user.ClientId == null ? null : await _clientService.GetClientDTOAsync((int)(user.ClientId)),
+                Client = client == null ? null : new ClientDTO(client),
                 Mechanic = user.MechanicId == null ? null : await _mechanicService.GetMechanicAsync((int)(user.MechanicId)),
                 userName = user.UserName,
                 email = user.Email,

@@ -2,6 +2,7 @@
 using Interfaces.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Interfaces.DTO;
 
 namespace Endpoints.Controllers
 {
@@ -10,11 +11,13 @@ namespace Endpoints.Controllers
     {
         private readonly ILogger _logger;
         private readonly IUserService _userService;
+        private readonly IClientService _clientService;
 
-        public AccountController(ILogger<AccountController> logger, IUserService userService)
+        public AccountController(ILogger<AccountController> logger, IUserService userService, IClientService clientService)
         {
             _logger = logger;
             _userService = userService;
+            _clientService = clientService;
         }
 
         [HttpPost]
@@ -136,6 +139,25 @@ namespace Endpoints.Controllers
                 return Problem();
             }
 
+        }
+
+        [HttpPatch]
+        [Authorize(Roles = "client")]
+        [Route("api/account/updateDefaultStation")]
+        public async Task<ActionResult<ClientDTO>> UpdateDefaultStation(int id)
+        {
+            try
+            {
+                var result = await _clientService.SetDefaultStation(id, HttpContext.User);
+                if (result == null) return NotFound();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
         }
     }
 }

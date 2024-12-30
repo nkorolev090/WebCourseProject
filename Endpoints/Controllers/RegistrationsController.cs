@@ -102,6 +102,29 @@ namespace Endpoints.Controllers
             }
         }
 
+        // POST api/<RegistrationsController>
+        [HttpPost(nameof(CreateRegistration))]
+        [Authorize(Roles = "client")]
+        public async Task<ActionResult<RegistrationDTO>> CreateRegistration([FromBody]int carId)
+        {
+            try
+            {
+                RegistrationDTO? reg = await registrationService.CreateRegistrationAsync(carId, HttpContext.User);
+                if (reg == null)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                return reg;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
+        }
+
         // PUT api/<RegistrationsController>/5
         [HttpPut("{id}")]
         [Authorize(Roles = "client, mechanic")]

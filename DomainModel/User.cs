@@ -13,7 +13,7 @@ namespace DomainModel
         public int? ClientId { get; set; }
 
         public int? MechanicId { get; set; }
-
+        
         public virtual Client? Client { get; set; }
 
         public virtual Mechanic? Mechanic { get; set; }

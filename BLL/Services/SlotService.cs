@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +15,12 @@ namespace BLL.Services
     public class SlotService : ISlotService
     {
         IDbRepository db;
-        public SlotService(IDbRepository db) { this.db = db; }
+        IUserService userService;
+        public SlotService(IDbRepository db, IUserService userService) 
+        {
+            this.db = db; 
+            this.userService = userService;
+        }
         public async Task<SlotDTO> CreateSlotAsync(SlotDTO slotDTO)
         {
             Slot slot = new Slot();
@@ -43,10 +49,13 @@ namespace BLL.Services
            return slots.Where(i => i.RegistrationId == null).Select( i => new SlotDTO(i)).ToList();
         }
 
-        public async Task<List<SlotDTO>> GetSlotsByDate_BreakdownAsync(DateTime startDate, int breakdown_id) 
+        public async Task<List<SlotDTO>> GetSlotsByDate_BreakdownAsync(DateTime startDate, int breakdown_id, ClaimsPrincipal currUser) 
         {
+            var user = await userService.IsAuthenticatedAsync(currUser);
+            if(user?.Client?.default_station_id == null) return new List<SlotDTO>();
+
             List<MechanicBreakdown> _mb = await db.Mechanic_Breakdowns.GetListAsync();
-            List<int> mechanic_ids = _mb.Where(i => i.BreakdownId == breakdown_id).Select(i=>i.MechanicId).ToList();
+            List<int> mechanic_ids = _mb.Where(i => i.BreakdownId == breakdown_id && i.Mechanic.StationId == user.Client.default_station_id).Select(i=>i.MechanicId).ToList();
             List<Slot> _slots = await db.Slots.GetListAsync();
             List<DateTime> dateTimes = _slots.Select(i => i.StartDate).ToList();
            

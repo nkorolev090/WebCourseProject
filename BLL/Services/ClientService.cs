@@ -1,19 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Interfaces.DTO;
+﻿using Interfaces.DTO;
 using Interfaces.Repository;
 using Interfaces.Services;
 using DomainModel;
+using System.Security.Claims;
 
 namespace BLL.Services
 {
     public class ClientService : IClientService
     {
         IDbRepository db;
-        public ClientService(IDbRepository db) { this.db = db; }
+        IUserService userService;
+        public ClientService(IDbRepository db, IUserService userService) 
+        { 
+            this.db = db;
+            this.userService = userService;
+        }
         public async Task<ClientDTO> CreateClientDTOAsync(ClientDTO p)
         {
             Client client = new Client();
@@ -22,6 +23,23 @@ namespace BLL.Services
             client.DiscountPoints = 0;
             
             return new ClientDTO(await db.Clients.CreateAsync(client));
+        }
+
+        public async Task<ClientDTO?> SetDefaultStation(int id, ClaimsPrincipal currUser)
+        {
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+            if (user != null && user.Client != null)
+            {
+                var client = await db.Clients.GetItemAsync(user.Client.id);
+                if (client == null) return null;
+
+                client.DefaultStationId = id;
+                db.Clients.Update(client);
+                await db.SaveAsync();
+                client = await db.Clients.GetItemAsync(client.Id);
+                return client == null ? null : new ClientDTO(client);
+            }
+            return null;
         }
 
         public void DeleteClientDTOAsync(int id)

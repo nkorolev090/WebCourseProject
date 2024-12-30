@@ -12,6 +12,8 @@ namespace Interfaces.DTO
 
         public int discount_points { get; set; }
 
+        public int? default_station_id { get; set; }
+
         public DateTime? birth_date { get; set; }
 
         public string birth_short { get; set; } = string.Empty;
@@ -28,6 +30,7 @@ namespace Interfaces.DTO
             if(birth_date != null)
                 birth_short = birth_date?.ToShortDateString();
             cart_id = client.CartId;
+            default_station_id = client.DefaultStationId;
         }
     }
 }

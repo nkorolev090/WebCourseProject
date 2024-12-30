@@ -94,11 +94,15 @@ namespace BLL.Services
         public async Task<Boolean> ClearCart(ClaimsPrincipal claimsPrincipal)
         {
             var cart = await getUserCart(claimsPrincipal);
-            if (cart == null) return false;
+            var user = await _userService.IsAuthenticatedAsync(claimsPrincipal);
+            if (cart == null || user?.Client == null) return false;
 
             foreach(var item in cart.CartItems)
             {
-                _db.CartItems.DeleteAsync(item.Id);
+                if(item.Slot.Mechanic.StationId == user.Client.default_station_id)
+                {
+                    _db.CartItems.DeleteAsync(item.Id);
+                }
             }
 
             cart.CartItems.Clear();

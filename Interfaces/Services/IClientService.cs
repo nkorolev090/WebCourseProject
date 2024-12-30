@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace Interfaces.Services
 {
     public interface IClientService
     {
+        Task<ClientDTO?> SetDefaultStation(int stationId, ClaimsPrincipal currUser);
         Task<List<ClientDTO>> GetAllClientDTOAsync();
 
         Task<ClientDTO> CreateClientDTOAsync(ClientDTO p);

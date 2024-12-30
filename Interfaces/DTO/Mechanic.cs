@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DomainModel;
+﻿using DomainModel;
 
 namespace Interfaces.DTO
 {
@@ -15,10 +8,13 @@ namespace Interfaces.DTO
 
         public string full_name { get; set; }
 
+        public int station_id { get; set; }
+
         public MechanicDTO(Mechanic mechanic) 
         { 
             id = mechanic.Id;
             full_name = mechanic.FullName;
+            station_id = mechanic.StationId;
         }
     }
 }

@@ -20,8 +20,21 @@ namespace Interfaces.DTO
                 subtotal = subtotal,
                 discount_value = discountValue,
                 total = subtotal - discountValue,
-                cart_items = cart.CartItems.Select(item => item.ToCartItemDto()).ToList(),
+                available_cart_items = new List<CartItemDTO>(),
+                unavailable_cart_items = new List<CartItemDTO>(),
             };
+
+            foreach(CartItem item in  cart.CartItems)
+            {
+                if(item.Slot.Mechanic.StationId != cart.Client.DefaultStationId || item.Slot.RegistrationId != null)
+                {
+                    cartDto.unavailable_cart_items.Add(item.ToCartItemDto());
+                }
+                else
+                {
+                    cartDto.available_cart_items.Add(item.ToCartItemDto());
+                }
+            }
 
             if(cart.PromocodeId != null)
             {

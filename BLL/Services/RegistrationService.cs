@@ -22,6 +22,53 @@ namespace BLL.Services
             this.notificationService = notificationService;
             this.deviceTokenService = deviceTokenService;
         }
+
+        public async Task<RegistrationDTO?> CreateRegistrationAsync(int carId, ClaimsPrincipal currUser)//Метод создания записи
+        {
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+            var client = await db.Clients.GetItemAsync(user!.Client!.id);
+            if (user == null || client == null)
+            {
+                return null;
+            }
+
+            Registration reg = new Registration();
+            reg.CarId = carId;
+            var clientCart = client.Cart.ToCartDto();
+            if (clientCart == null || clientCart.available_cart_items.Count == 0) return null;
+
+            var slots = clientCart.available_cart_items.Select(i => i.slot).ToList();
+
+            var price = await sumSubTotal(slots);
+            price *= 1.0 - client.Discount.Sale / 100.0;
+            reg.RegPrice = price;
+
+            reg.RegDate = DateTime.Now;
+            reg.Status = 1; //на обработке
+            reg.Car = await db.Cars.GetItemAsync(reg.CarId);
+            reg.StatusNavigation = await db.Statuses.GetItemAsync(1);
+            Registration registration1 = await db.Registrations.CreateAsync(reg);
+
+            await db.SaveAsync();
+
+            foreach (SlotDTO slot in slots)
+            {
+                var s = await db.Slots.GetItemAsync(slot.id);
+                if (s == null)
+                {
+                    return null;
+                }
+                s.RegistrationId = registration1.Id;
+                s.Registration = registration1;
+            }
+
+            await db.SaveAsync();
+
+            await cartService.ClearCart(currUser);
+
+            return new RegistrationDTO(registration1);
+        }
+
         public async Task<RegistrationDTO?> CreateRegistrationAsync(RegistrationViewModel registration, ClaimsPrincipal currUser)//Метод создания записи
         {
 

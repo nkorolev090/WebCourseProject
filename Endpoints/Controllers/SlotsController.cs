@@ -27,7 +27,7 @@ namespace Endpoints.Controllers
             try
             {
                 DateTime dateTime = DateTime.Parse(date);
-                return await slotService.GetSlotsByDate_BreakdownAsync(dateTime, breakdown_id);
+                return await slotService.GetSlotsByDate_BreakdownAsync(dateTime, breakdown_id, HttpContext.User);
             }
             catch (Exception ex)
             {

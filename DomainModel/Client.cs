@@ -16,6 +16,8 @@ public partial class Client
 
     public int? CartId { get; set; } = null;
 
+    public int? DefaultStationId { get; set; }
+
     public virtual Cart Cart { get; set; } = null!;
 
     public virtual ICollection<Car> Cars { get; set; } = new List<Car>();
