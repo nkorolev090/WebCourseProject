@@ -159,5 +159,24 @@ namespace Endpoints.Controllers
                 return Problem();
             }
         }
+
+        [HttpPatch]
+        [Authorize(Roles = "client")]
+        [Route("api/account/updateDefaultCar")]
+        public async Task<ActionResult<ClientDTO>> UpdateDefaultCar(int id)
+        {
+            try
+            {
+                var result = await _clientService.SetDefaultCar(id, HttpContext.User);
+                if (result == null) return NotFound();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message,
+                    DateTime.UtcNow.ToLongTimeString());
+                return Problem();
+            }
+        }
     }
 }

@@ -42,6 +42,26 @@ namespace BLL.Services
             return null;
         }
 
+        public async Task<ClientDTO?> SetDefaultCar(int id, ClaimsPrincipal currUser)
+        {
+            UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
+            if (user != null && user.Client != null)
+            {
+                var client = await db.Clients.GetItemAsync(user.Client.id);
+                if (client == null) return null;
+
+                var hasCar = client.Cars.Any( car => car.Id == id);
+                if (!hasCar) return null;
+
+                client.DefaultCarId = id;
+                db.Clients.Update(client);
+                await db.SaveAsync();
+                client = await db.Clients.GetItemAsync(client.Id);
+                return client == null ? null : new ClientDTO(client);
+            }
+            return null;
+        }
+
         public void DeleteClientDTOAsync(int id)
         {
             throw new NotImplementedException();

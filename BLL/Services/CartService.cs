@@ -97,15 +97,24 @@ namespace BLL.Services
             var user = await _userService.IsAuthenticatedAsync(claimsPrincipal);
             if (cart == null || user?.Client == null) return false;
 
-            foreach(var item in cart.CartItems)
+            var itemsToRemove = new List<CartItem>();
+
+            foreach (var item in cart.CartItems)
             {
                 if(item.Slot.Mechanic.StationId == user.Client.default_station_id)
                 {
+                    item.CartId = null;
+                    item.Cart = null;
+
+                    itemsToRemove.Add(item);
                     _db.CartItems.DeleteAsync(item.Id);
                 }
             }
 
-            cart.CartItems.Clear();
+            foreach (var item in itemsToRemove)
+            {
+                cart.CartItems.Remove(item);
+            }
 
             await _db.SaveAsync();
 

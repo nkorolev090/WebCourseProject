@@ -58,10 +58,9 @@ namespace BLL.Services
         {
             UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
 
-            if (user?.Client != null)
+            if (user?.Client?.default_car_id != null)
             {
-                List<Car> cars = await db.Cars.GetListAsync();
-                var defaultCar = cars.FirstOrDefault(i => i.OwnerId == user?.Client.id);
+                var defaultCar = await db.Cars.GetItemAsync((int)(user?.Client?.default_car_id));
                 if(defaultCar == null)
                 {
                     return null;

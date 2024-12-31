@@ -176,7 +176,8 @@ namespace DAL
                     .HasColumnName("birth_date");
                 entity.Property(e => e.DiscountId).HasColumnName("discount_id");
                 entity.Property(e => e.DiscountPoints).HasColumnName("discount_points");
-
+                entity.Property(e => e.DefaultStationId).HasColumnName("default_station_id");
+                entity.Property(e => e.DefaultCarId).HasColumnName("default_car_id");
                 entity.HasOne(d => d.Discount).WithMany(p => p.Clients)
                     .HasForeignKey(d => d.DiscountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
@@ -202,6 +203,7 @@ namespace DAL
                 entity.ToTable("Mechanic"/*, e => e.Property(e => e.Id).UseIdentityColumn(2, 2)*/);
                 //entity.UseTptMappingStrategy();
                 entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.StationId).HasColumnName("station_id");
                 entity.Property(e => e.FullName)
                     .HasMaxLength(50)
                     .IsUnicode(false)

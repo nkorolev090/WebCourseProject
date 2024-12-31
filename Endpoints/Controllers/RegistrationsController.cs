@@ -105,11 +105,11 @@ namespace Endpoints.Controllers
         // POST api/<RegistrationsController>
         [HttpPost(nameof(CreateRegistration))]
         [Authorize(Roles = "client")]
-        public async Task<ActionResult<RegistrationDTO>> CreateRegistration([FromBody]int carId)
+        public async Task<ActionResult<RegistrationDTO>> CreateRegistration()
         {
             try
             {
-                RegistrationDTO? reg = await registrationService.CreateRegistrationAsync(carId, HttpContext.User);
+                RegistrationDTO? reg = await registrationService.CreateRegistrationAsync(HttpContext.User);
                 if (reg == null)
                 {
                     return BadRequest(ModelState);

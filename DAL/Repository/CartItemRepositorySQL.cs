@@ -16,9 +16,9 @@ namespace DAL.Repository
             return await _db.CartItems.LastAsync();
         }
 
-        public async void DeleteAsync(int id)
+        public void DeleteAsync(int id)
         {
-            var item = await _db.CartItems.FindAsync(id);
+            var item = _db.CartItems.Find(id);
             if (item != null)
             {
                 _db.CartItems.Remove(item);

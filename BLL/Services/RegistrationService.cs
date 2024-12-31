@@ -23,17 +23,19 @@ namespace BLL.Services
             this.deviceTokenService = deviceTokenService;
         }
 
-        public async Task<RegistrationDTO?> CreateRegistrationAsync(int carId, ClaimsPrincipal currUser)//Метод создания записи
+        public async Task<RegistrationDTO?> CreateRegistrationAsync(ClaimsPrincipal currUser)//Метод создания записи
         {
             UserDTO? user = await userService.IsAuthenticatedAsync(currUser);
             var client = await db.Clients.GetItemAsync(user!.Client!.id);
-            if (user == null || client == null)
+            if (user == null || client?.DefaultCarId == null)
             {
                 return null;
             }
 
             Registration reg = new Registration();
-            reg.CarId = carId;
+
+            reg.CarId = (int)client.DefaultCarId;
+
             var clientCart = client.Cart.ToCartDto();
             if (clientCart == null || clientCart.available_cart_items.Count == 0) return null;
 
