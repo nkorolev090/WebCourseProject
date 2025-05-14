@@ -73,7 +73,7 @@ namespace DAL
 
                 entity.Property(e => e.Id).HasColumnName("id");
                 entity.Property(e => e.CartId).HasColumnName("cart_id");
-                entity.Property(e => e.CartId).HasColumnName("slot_id");
+                entity.Property(e => e.SlotId).HasColumnName("slot_id");
                 entity.HasOne(e => e.Cart).WithMany(e => e.CartItems).HasForeignKey(e => e.CartId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_CartItem_Cart");
                 entity.HasOne(e => e.Slot).WithMany(e => e.CartItems).HasForeignKey(e => e.SlotId).OnDelete(DeleteBehavior.Cascade).HasConstraintName("FK_CartItem_Slot");
             });
